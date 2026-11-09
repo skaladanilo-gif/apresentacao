@@ -286,6 +286,18 @@ body.y .ui{color:var(--black)}
 .zero p{margin:0;font-size:24px;font-weight:800;line-height:1.2;max-width:36ch}
 .zero p span{display:block;font-size:19px;font-weight:600;opacity:.7;margin-top:6px}
 
+
+/* plano de ação */
+.acts{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-block:auto 0}
+.act{background:var(--card);border-radius:24px;padding:22px 26px;display:flex;flex-direction:column;gap:11px;border-top:6px solid var(--yellow)}
+.act .apl{font-family:var(--mono);font-size:14px;font-weight:700;color:var(--yellow);letter-spacing:.06em}
+.act h3{margin:0;font-size:30px;font-weight:900;font-stretch:112%;line-height:1;letter-spacing:-.02em}
+.act ul{margin:0;padding:0;list-style:none;display:grid;gap:8px;font-size:17px;font-weight:600;line-height:1.3}
+.act li{padding-left:22px;position:relative;color:#e8e8e8}
+.act li::before{content:"";position:absolute;left:0;top:.5em;width:10px;height:10px;border-radius:50%;background:var(--yellow)}
+.act .kpi{margin-top:auto;display:flex;align-items:baseline;gap:12px;background:var(--yellow);color:var(--black);border-radius:14px;padding:12px 16px;font-weight:800;font-size:17px}
+.act .kpi b{font-family:var(--mono);font-size:13px;letter-spacing:.06em}
+
 @media (prefers-reduced-motion:reduce){
   .track,.open,.notif,.slide.on .shot{animation:none}
   .slide,.slide .in{transition:none}
@@ -599,14 +611,43 @@ body.y .ui{color:var(--black)}
   <div class="avg in d4"><div class="poster v">3,3</div><p>média de 1 a 5</p></div>
 </section>
 
+
+<!-- ações concretas -->
+<section class="slide" aria-label="Duas ações para os pilares mais fracos">
+  <div class="in"><span class="tag"><span class="n">plano de ação</span> os pilares mais fracos</span></div>
+  <h2 class="in d2" style="max-width:20ch">Duas ações para <em>sair da nota 2</em></h2>
+  <div class="acts in d3">
+    <div class="act">
+      <span class="apl">01 · TRANSPARÊNCIA</span>
+      <h3>"Seus dados, sem letra miúda"</h3>
+      <ul>
+        <li>Série de Reels e TikToks, no tom da marca, mostrando como desligar o uso de dados na IA</li>
+        <li>Destaque "Privacidade" no Instagram e post fixado no X explicando multas e acordos</li>
+        <li>Resposta em até 48 h nas redes quando sair notícia sobre dados</li>
+      </ul>
+      <div class="kpi"><b>META</b>de 0 para 1 post sobre dados por mês</div>
+    </div>
+    <div class="act">
+      <span class="apl">02 · VISIBILIDADE</span>
+      <h3>Alerta de golpe em português</h3>
+      <ul>
+        <li>Campanha no Brasil, 3º país em downloads, sobre o golpe do falso delegado e perfis falsos</li>
+        <li>Responder em público, em até 24 h, os fios virais de relato com link de denúncia</li>
+        <li>Aviso dentro do app antes de trocar número com um perfil novo</li>
+      </ul>
+      <div class="kpi"><b>META</b>de 0 para 100% dos fios virais respondidos</div>
+    </div>
+  </div>
+</section>
+
 <!-- 16 · fim -->
 <section class="slide Y" data-bg="y" aria-label="Conclusão">
   <div class="top in"><span class="tag">conclusão</span><button class="cta" type="button" id="srcBtn">Método e fontes</button></div>
   <h2 class="in d2" style="font-size:84px;max-width:16ch">Culturalmente gigante. <em>Institucionalmente frágil.</em></h2>
   <div class="recs in d3">
-    <div class="rec"><span>01</span><p>Fazer o próprio tutorial de privacidade</p></div>
-    <div class="rec"><span>02</span><p>Responder também nos posts sérios</p></div>
-    <div class="rec"><span>03</span><p>Separar a voz da marca da voz do CEO</p></div>
+    <div class="rec"><span>O MAIOR ATIVO</span><p>Cultura: fala a língua da comunidade como ninguém</p></div>
+    <div class="rec"><span>O MAIOR RISCO</span><p>Silêncio sobre dados, golpes e segurança</p></div>
+    <div class="rec"><span>O PRÓXIMO PASSO</span><p>Levar o mesmo tom para os assuntos sérios</p></div>
   </div>
 </section>
 
