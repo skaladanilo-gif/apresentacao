@@ -793,7 +793,19 @@ const fmt=n=>n>=1000?(n/1000).toLocaleString("pt-BR",{maximumFractionDigits:1})+
 function pair(r,net){const ig=net==="ig";const m=ig?(r[3]+" curtida"+(r[3]===1?"":"s")):(fmt(r[3])+" views");
   return `<div class="pair"><div class="who"><span>@${esc(r[0])}</span><span>${ig?"IG":"X"} · ${m}</span></div><div class="b fan">${esc(r[1])}</div><div class="b gr">${esc(r[2])}</div></div>`;}
 
-const T1=[[IG[0],"ig"],[X[3],"x"],[IG[1],"ig"],[X[1],"x"],[IG[8],"ig"],[X[9],"x"],[IG[3],"ig"],[X[31],"x"],[X[0],"x"],[IG[44],"ig"]];
+// capa: as mesmas respostas, traduzidas mantendo o deboche
+const T1=[
+ [["gofreddie","se não tá fazendo edging, tá fazendo o quê da vida, bicha?!","no modo maratona 😮‍💨"],"ig"],
+ [["PopCulture2000s","Kylie Jenner usando o sutiã de fantasia de 22 milhões","PASSADAAAAA"],"x"],
+ [["babsdoeslife","o encontro dessas duas mentes vai fritar o que sobrou do meu cérebro","frita com a gente, mana"],"ig"],
+ [["jackinupdates","Jack Innanen está indicado para Bunda do Ano nos prêmios do Grindr","quero ele entregue aqui em casa pelo iFood, com urgência"],"x"],
+ [["0.p0rt0","Sandra Bullock?","não entendi as instruções 🫣"],"ig"],
+ [["lovecaraz","carlos foi indicado para melhor bunda no Grindr Awards 😭 vote nele","MEU BOFE!!!!"],"x"],
+ [["trulyydreww","tá sobrando passivo e faltando ativo nesses tempos","eu emprestava um pouquinho dessa bunda, se é que me entende 😏"],"ig"],
+ [["mikepow0","no meio do meu corte de cabelo muito silencioso, meu barbeiro…","ele já te viu na grade 👀"],"x"],
+ [["updatingstorrie","Somos uma conta de atualizações séria. Profissional, por assim dizer.","só vota, amor"],"x"],
+ [["millhouseofleaves","Passada 👌","passada não, engasgada*"],"ig"]
+];
 const tk=(r,n)=>`<div class="tk"><div class="who"><span>@${esc(r[0])}</span><span>${n==="ig"?"IG":"X"}</span></div><div class="b fan">${esc(r[1])}</div><div class="b gr">${esc(r[2])}</div></div>`;
 {const h=T1.map(([r,n])=>tk(r,n)).join("");document.getElementById("t1").innerHTML=h+h;}
 document.getElementById("p3").innerHTML=pair(IG[0],"ig")+pair(IG[43],"ig");
