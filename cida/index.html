@@ -100,11 +100,32 @@ form input{flex:1;font:600 16px 'Montserrat',sans-serif;padding:14px 16px;border
 // Quando houver a função com a chave do Claude, coloque o endereço aqui (ex.: "/.netlify/functions/cida").
 const API_URL = "https://ygvckbjzxxpqchqpyoug.supabase.co/functions/v1/cida";
 
-// ===== Anéis da marca =====
+// ===== Anéis da marca: reagem à voz da Cida =====
+let ringTarget=0;
 (function(){
-  const cols=['#FFD60A','#E61973','#F24444','#F7F4EB','#FFD60A','#E61973'];let s='';
-  cols.forEach((c,i)=>{const R=290*(1-i/cols.length);let d='';for(let k=0;k<=120;k++){const t=k/120*Math.PI*2;const r=R*(1+0.05*Math.sin(8*t+i*.5));d+=(k?'L':'M')+(300+r*Math.cos(t)).toFixed(1)+' '+(300+r*Math.sin(t)).toFixed(1)}s+=`<path d="${d}Z" fill="${c}"/>`});
-  document.getElementById('ringsvg').innerHTML=s;
+  const cols=['#FFD60A','#E61973','#F24444','#F7F4EB','#FFD60A','#E61973'];
+  const svg=document.getElementById('ringsvg');
+  svg.innerHTML=cols.map(c=>`<path fill="${c}"/>`).join('');
+  const paths=[...svg.querySelectorAll('path')];
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let amp=0,last=performance.now(),ph=0;
+  function draw(now){
+    const dt=Math.min(.05,(now-last)/1000);last=now;
+    // sobe rápido quando ela fala, desce suave quando para
+    amp+=(ringTarget-amp)*(ringTarget>amp?.45:.12);
+    ph+=dt*(0.6+amp*5);
+    paths.forEach((p,i)=>{
+      const n=cols.length,R=290*(1-i/n)*(1+amp*0.07*(1-i/n));
+      const wav=0.035+amp*0.11*(0.5+i/n),lobes=8+(i%2);
+      let d='';
+      for(let k=0;k<=96;k++){const t=k/96*Math.PI*2;
+        const r=R*(1+wav*Math.sin(lobes*t+i*.5+ph*(i%2?1:-1)*(1+i*.15)));
+        d+=(k?'L':'M')+(300+r*Math.cos(t)).toFixed(1)+' '+(300+r*Math.sin(t)).toFixed(1)}
+      p.setAttribute('d',d+'Z');
+    });
+    if(!reduce)requestAnimationFrame(draw);
+  }
+  draw(performance.now());
 })();
 
 // ===== Rosto e bocas =====
@@ -147,10 +168,10 @@ function speak(text,bubble,allowVoice=true){
       let idx=Math.floor(base+(now-baseT)/1000*cps);
       if(idx>=text.length){idx=text.length; if(!useVoice){finish();return}}
       if(idx!==last){bubble.textContent=text.slice(0,Math.max(idx,1));last=idx;scrollDown()}
-      mouth(idx<text.length?viseme(text[idx]):'repouso');
+      {const vm=idx<text.length?viseme(text[idx]):'repouso';ringTarget=vm==='repouso'?0.05:(vm==='a'||vm==='o'?0.7:0.4);mouth(vm)}
       requestAnimationFrame(frame);
     }
-    function finish(){if(done)return;done=true;bubble.textContent=text;mouth('repouso');setStatus('online agora');res()}
+    function finish(){if(done)return;done=true;ringTarget=0;bubble.textContent=text;mouth('repouso');setStatus('online agora');res()}
     if(useVoice){
       speechSynthesis.cancel();
       const u=new SpeechSynthesisUtterance(text);u.lang='pt-BR';u.voice=voice;u.rate=1.08;u.pitch=1.15;
@@ -202,6 +223,7 @@ function mouthTrack(u8){
       if(want!==cur&&hold<=0){cur=want;hold=9;if(want==='a'||want==='o')alt++}
       hold--;track[f]=cur;
     }
+    track.amp=Array.from(sm,v=>Math.min(v/peak,1.2));
     return track}catch(e){return null}
 }
 async function fetchVoice(text,mood){
@@ -222,9 +244,10 @@ function speakAudio(text,bubble,v){
       let m;
       if(v.track){m=v.track[Math.floor((t+0.03)*100)]||'repouso'}
       else{m=idx<text.length?viseme(text[idx]):'repouso'}
+      ringTarget=v.track&&v.track.amp?Math.min(1,(v.track.amp[Math.floor((t+0.03)*100)]||0)):(m==='repouso'?0.1:0.6);
       mouth(m);requestAnimationFrame(frame);
     }
-    function finish(){if(done)return;done=true;player.onended=player.onerror=null;bubble.textContent=text;mouth('repouso');setStatus('online agora');URL.revokeObjectURL(v.url);res()}
+    function finish(){if(done)return;done=true;ringTarget=0;player.onended=player.onerror=null;bubble.textContent=text;mouth('repouso');setStatus('online agora');URL.revokeObjectURL(v.url);res()}
     player.onended=finish;player.onerror=finish;
     player.src=v.url;
     player.play().then(()=>requestAnimationFrame(frame)).catch(()=>{done=true;URL.revokeObjectURL(v.url);
