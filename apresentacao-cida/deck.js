@@ -317,7 +317,7 @@ const cena = (function () {
   function tamanho() {
     const w = innerWidth, h = innerHeight; renderer.setSize(w, h, false); cam.aspect = w / h;
     // distância para a boneca ocupar ~78% da altura
-    const fov = cam.fov * Math.PI / 180; cam.position.set(0, .02, (H / .78) / 2 / Math.tan(fov / 2)); cam.lookAt(0, 0, 0);
+    const fov = cam.fov * Math.PI / 180; const dH = (H / .78) / 2 / Math.tan(fov / 2), dW = (.78 / .8) / 2 / Math.tan(fov / 2) / cam.aspect; cam.position.set(0, .02, Math.max(dH, dW)); cam.lookAt(0, 0, 0);
     cam.updateProjectionMatrix();
   }
   addEventListener('resize', tamanho); tamanho();
