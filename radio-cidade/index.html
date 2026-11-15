@@ -4,261 +4,329 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Rádio Cidade 97.7 FM · Toca aqui, toca na Cidade</title>
-<meta name="description" content="Rádio Cidade 97.7 FM: hits pop ao vivo, babados, notícias e a Cida, a amiga mais antenada da cidade.">
+<meta name="description" content="Rádio Cidade 97.7 FM: hits pop ao vivo, notícias, babados e a Cida, a IA da rádio.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Montserrat:wght@500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-:root{--azul:#2558FF;--pink:#E61973;--sol:#FFD60A;--coral:#F24444;--ink:#121316;--papel:#F7F4EB;--azul-escuro:#1A3FCC}
+:root{--azul:#2558FF;--pink:#E61973;--sol:#FFD60A;--coral:#F24444;--ink:#121316;--papel:#F7F4EB}
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{font-family:'Montserrat',Arial,sans-serif;color:var(--ink);background:var(--papel);overflow-x:hidden}
-a{color:inherit}
+body{font-family:'Montserrat',Arial,sans-serif;color:var(--ink);background:var(--papel);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
 img{display:block;max-width:100%}
+button{font:inherit}
 :focus-visible{outline:3px solid var(--sol);outline-offset:3px}
-.wrap{width:min(1240px,92vw);margin:0 auto}
-.disp{font-family:'Lilita One',sans-serif;font-weight:400;letter-spacing:.005em;line-height:.92}
+.wrap{width:min(1320px,92vw);margin:0 auto}
+.d{font-family:'Lilita One',sans-serif;font-weight:400;line-height:.88;letter-spacing:-.005em}
 
-/* ---------- topo ---------- */
-.top{position:absolute;inset:0 0 auto 0;z-index:20;color:#fff}
-.top .wrap{display:flex;align-items:center;gap:28px;height:96px}
-.top .logo{height:62px;width:auto}
-.top nav{display:flex;gap:26px;margin-left:auto;font-weight:700;font-size:15px}
-.top nav a{text-decoration:none;opacity:.92}
-.top nav a:hover{opacity:1;text-decoration:underline;text-underline-offset:5px;text-decoration-thickness:2px}
-.btn{display:inline-flex;align-items:center;gap:10px;border:0;cursor:pointer;font:800 16px 'Montserrat',sans-serif;border-radius:999px;padding:14px 24px;text-decoration:none}
-.btn-play{background:var(--sol);color:var(--ink)}
-.btn-play svg{width:18px;height:18px}
-.top .btn{padding:11px 18px;font-size:14px}
+/* ================= topo ================= */
+.top{position:fixed;inset:0 0 auto;z-index:40;transition:background .3s}
+.top .wrap{display:flex;align-items:center;gap:32px;height:84px}
+.top .logo{height:54px;width:auto;transition:height .3s}
+.top nav{display:flex;gap:30px;margin-left:auto;font-weight:700;font-size:15px;color:#fff}
+.top nav a{position:relative;padding:6px 0}
+.top nav a::after{content:'';position:absolute;left:0;right:100%;bottom:0;height:3px;background:var(--sol);transition:right .25s}
+.top nav a:hover::after{right:0}
+.top.solid{background:var(--ink)}
+.top.solid .logo{height:44px}
+.pill{display:inline-flex;align-items:center;gap:10px;border:0;cursor:pointer;font-weight:800;font-size:15px;border-radius:999px;padding:13px 22px;background:var(--sol);color:var(--ink);transition:transform .15s}
+.pill:hover{transform:translateY(-2px)}
+.pill svg{width:16px;height:16px}
 
-/* ---------- herói: o dial ---------- */
-.hero{position:relative;background:var(--azul);color:#fff;overflow:hidden;padding:120px 0 0}
-.hero .wrap{position:relative;min-height:calc(100vh - 120px);max-height:900px;display:grid;grid-template-columns:1fr;align-content:end}
-.slogan{font-weight:800;font-size:clamp(18px,2vw,26px);margin-bottom:4px;max-width:14em}
-.freq{font-size:clamp(150px,27vw,400px);color:var(--sol);margin-left:-.04em;position:relative;z-index:2;font-variant-numeric:tabular-nums;white-space:nowrap}
-.freq small{font-size:.22em;color:#fff;margin-left:.15em;vertical-align:.25em}
-.cida-hero{position:absolute;right:-1%;bottom:0;height:min(96%,860px);z-index:5;pointer-events:none;filter:drop-shadow(0 22px 0 rgba(0,0,0,.18))}
-.dial{position:relative;height:120px;margin:10px 0 0;z-index:4}
-.dial svg{width:100%;height:76px;display:block}
-.needle{position:absolute;top:-34px;width:6px;height:118px;background:var(--pink);border-radius:3px;left:var(--x,0%);transform:translateX(-50%);box-shadow:0 0 0 4px rgba(230,25,115,.25)}
-.dial-row{display:flex;align-items:center;gap:18px;padding:22px 0 34px;position:relative;z-index:6;max-width:62%;flex-wrap:wrap}
-.dial-row p{font-weight:700;font-size:16px;max-width:22em;opacity:.95}
-.onair{display:inline-flex;align-items:center;gap:8px;font-weight:800;font-size:14px;background:rgba(255,255,255,.14);border-radius:999px;padding:8px 14px}
-.onair i{width:9px;height:9px;border-radius:50%;background:var(--coral);box-shadow:0 0 0 4px rgba(242,68,68,.3)}
+/* ================= herói ================= */
+.hero{background:var(--azul);color:#fff;position:relative;overflow:hidden;padding:84px 0 0}
+.hero-grid{position:relative;z-index:2;display:grid;grid-template-columns:1fr auto;align-items:end;gap:3vw;padding:7vh 0 6vh}
+.manchete{font-size:clamp(64px,11.4vw,188px)}
+.manchete span{display:block;overflow:hidden;padding-bottom:.06em}
+.manchete span i{display:block;font-style:normal;transform:translateY(105%);animation:sobe .9s cubic-bezier(.16,1,.3,1) forwards}
+.manchete span:nth-child(1) i,.manchete span:nth-child(3) i{color:var(--sol)}
+.manchete span:nth-child(2) i{animation-delay:.12s}
+.manchete span:nth-child(3) i{animation-delay:.24s}
+@keyframes sobe{to{transform:none}}
+.hero-side{display:flex;flex-direction:column;align-items:center;gap:22px;padding-bottom:2vh}
+.disco{position:relative;width:clamp(150px,15vw,220px);aspect-ratio:1;border:0;background:none;cursor:pointer;color:var(--ink)}
+.disco svg.anel{position:absolute;inset:0;width:100%;height:100%;animation:gira 18s linear infinite}
+.disco .miolo{position:absolute;inset:22%;border-radius:50%;background:var(--sol);display:grid;place-items:center;transition:transform .25s cubic-bezier(.34,1.56,.64,1),background .2s}
+.disco:hover .miolo{transform:scale(1.07)}
+.disco .miolo svg{width:34%;height:34%}
+.disco.on .miolo{background:var(--pink);color:#fff}
+@keyframes gira{to{transform:rotate(360deg)}}
+.hero-side p{font-weight:700;font-size:15px;text-align:center;max-width:15em;opacity:.92}
+.onda{position:absolute;left:0;right:0;bottom:0;height:46%;display:flex;align-items:flex-end;gap:.55vw;padding:0 2vw;opacity:.14;pointer-events:none;z-index:1}
+.onda i{flex:1;background:#fff;border-radius:6px 6px 0 0;height:var(--h);transform-origin:bottom;animation:barra var(--t) ease-in-out infinite alternate}
+@keyframes barra{from{transform:scaleY(.35)}to{transform:scaleY(1)}}
+.dialband{background:var(--ink);color:#fff;position:relative;z-index:2}
+.dialband .wrap{display:grid;grid-template-columns:auto 1fr;gap:40px;align-items:center;padding:22px 0}
+.noar{display:flex;align-items:center;gap:14px;white-space:nowrap}
+.noar b{font-family:'Lilita One';font-weight:400;font-size:44px;color:var(--sol);font-variant-numeric:tabular-nums;display:inline-block;min-width:3.1ch}
+.noar small{display:block;font-weight:700;font-size:13px;opacity:.7}
+.noar .dot{width:10px;height:10px;border-radius:50%;background:var(--coral);animation:pulsa 1.6s ease-in-out infinite}
+@keyframes pulsa{0%,100%{box-shadow:0 0 0 0 rgba(242,68,68,.6)}50%{box-shadow:0 0 0 7px rgba(242,68,68,0)}}
+.dial{position:relative;height:58px}
+.dial svg{width:100%;height:100%;display:block}
+.agulha{position:absolute;top:-6px;bottom:-6px;width:5px;border-radius:3px;background:var(--pink);left:var(--x,0%);transform:translateX(-50%)}
+.agulha::before{content:'';position:absolute;left:50%;top:-6px;width:13px;height:13px;border-radius:50%;background:var(--pink);transform:translateX(-50%)}
 
-/* ---------- letreiro de babados ---------- */
-.letreiro{background:var(--sol);overflow:hidden;border-block:3px solid var(--ink)}
-.letreiro div{display:flex;gap:48px;white-space:nowrap;padding:14px 0;font-weight:800;font-size:17px;width:max-content;animation:corre 60s linear infinite}
-.letreiro span::before{content:'';display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--pink);margin-right:14px;vertical-align:2px}
+/* ================= letreiro ================= */
+.letreiro{background:var(--sol);overflow:hidden;border-bottom:3px solid var(--ink)}
+.letreiro div{display:flex;width:max-content;animation:corre 70s linear infinite}
+.letreiro span{font-weight:800;font-size:16px;padding:15px 0;white-space:nowrap}
+.letreiro span::after{content:'';display:inline-block;width:9px;height:9px;background:var(--pink);border-radius:50%;margin:0 28px;vertical-align:2px}
+.letreiro:hover div{animation-play-state:paused}
 @keyframes corre{to{transform:translateX(-50%)}}
 
-/* ---------- seções ---------- */
-section{padding:96px 0}
-.h2{font-size:clamp(46px,6vw,84px);margin-bottom:12px}
-.lead{font-size:18px;font-weight:600;max-width:34em;line-height:1.5;margin-bottom:40px;color:#34363c}
-.head-row{display:flex;justify-content:space-between;align-items:end;gap:24px;flex-wrap:wrap;margin-bottom:36px}
-.head-row .lead{margin-bottom:0}
-.btn-line{border:3px solid var(--ink);color:var(--ink);background:transparent}
-.btn-line:hover{background:var(--ink);color:#fff}
+/* ================= seções ================= */
+.sec{padding:110px 0}
+.tit{font-size:clamp(56px,8vw,128px);margin-bottom:14px}
+.sub{font-size:18px;font-weight:600;line-height:1.5;max-width:30em;color:#4a4c53}
+.cab{display:flex;justify-content:space-between;align-items:flex-end;gap:28px;flex-wrap:wrap;margin-bottom:48px}
+.link{display:inline-flex;align-items:center;gap:10px;font-weight:800;font-size:15px;border:3px solid currentColor;border-radius:999px;padding:12px 20px;transition:background .2s,color .2s,border-color .2s}
+.link:hover{background:var(--ink);color:var(--papel);border-color:var(--ink)}
 
-/* ---------- Cida ---------- */
-.cida{background:var(--pink);color:#fff;position:relative;overflow:hidden}
-.cida .wrap{display:grid;grid-template-columns:minmax(260px,420px) 1fr;gap:64px;align-items:center}
-.cida-face{position:relative;aspect-ratio:1;border-radius:50%;overflow:hidden;border:10px solid #fff;background:#7a3a22;box-shadow:0 18px 0 rgba(0,0,0,.18)}
-.cida-face img{width:100%;height:100%;object-fit:cover}
-.cida-face .fala{position:absolute;inset:0;opacity:0;transition:opacity .08s}
-.cida .h2{color:#fff}
-.cida .lead{color:#fff;opacity:.95}
-.perguntas{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:28px}
-.perguntas button{font:700 16px 'Montserrat',sans-serif;background:#fff;color:var(--ink);border:0;border-radius:18px 18px 18px 4px;padding:14px 18px;cursor:pointer;box-shadow:0 5px 0 rgba(0,0,0,.18)}
-.perguntas button:hover{background:var(--sol)}
-.btn-cida{background:var(--ink);color:#fff}
-.btn-cida svg{width:20px;height:20px}
+/* notícias: mosaico */
+.mosaico{display:grid;grid-template-columns:repeat(12,1fr);grid-auto-rows:150px;gap:18px}
+.tile{position:relative;border-radius:22px;overflow:hidden;background:#d9d4c8;display:flex;flex-direction:column;justify-content:flex-end;color:#fff;isolation:isolate}
+.tile img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;transition:transform .6s cubic-bezier(.16,1,.3,1)}
+.tile::before{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(18,19,22,0) 30%,rgba(18,19,22,.88))}
+.tile:hover img{transform:scale(1.05)}
+.tile .txt{padding:24px}
+.tile h3{font-weight:800;font-size:18px;line-height:1.25}
+.tile time{display:block;font-size:13px;font-weight:700;opacity:.8;margin-top:8px}
+.t-lead{grid-column:span 7;grid-row:span 4}
+.t-lead h3{font-family:'Lilita One';font-weight:400;font-size:clamp(30px,3.2vw,48px);line-height:1.02}
+.t-lead .txt{padding:36px}
+.t-a{grid-column:span 5;grid-row:span 2}
+.t-tag{grid-column:span 5;grid-row:span 2;background:var(--sol);color:var(--ink);padding:28px;justify-content:space-between}
+.t-tag::before{display:none}
+.t-tag b{font-family:'Lilita One';font-weight:400;font-size:clamp(40px,4.2vw,64px);line-height:.92}
+.t-tag span{font-weight:700;font-size:15px;max-width:22em}
+.t-s{grid-column:span 4;grid-row:span 2}
 
-/* ---------- notícias ---------- */
-.news{display:grid;grid-template-columns:1.25fr 1fr;gap:40px}
-.news-main{text-decoration:none;display:block}
-.news-main .img{aspect-ratio:4/3;border-radius:28px;overflow:hidden;background:#ddd}
-.news-main .img img{width:100%;height:100%;object-fit:cover;transition:transform .4s}
-.news-main:hover .img img{transform:scale(1.03)}
-.news-main h3{font-family:'Lilita One';font-weight:400;font-size:clamp(28px,3vw,40px);line-height:1.05;margin:20px 0 8px}
-.date{font-size:14px;font-weight:700;color:#5d6068}
-.news-list{list-style:none;display:flex;flex-direction:column}
-.news-list a{display:grid;grid-template-columns:116px 1fr;gap:18px;align-items:center;text-decoration:none;padding:16px 0;border-bottom:2px solid #e3ded1}
-.news-list li:first-child a{padding-top:0}
-.news-list img{width:116px;height:88px;object-fit:cover;border-radius:14px;background:#ddd}
-.news-list h4{font-size:17px;font-weight:800;line-height:1.3;margin-bottom:6px}
-.news-list a:hover h4{color:var(--azul)}
+/* babado */
+.babado{background:var(--pink);color:#fff;overflow:hidden}
+.babado .sub{color:#fff;opacity:.92}
+.setas{display:flex;gap:10px}
+.setas button{width:56px;height:56px;border-radius:50%;border:3px solid #fff;background:transparent;color:#fff;cursor:pointer;display:grid;place-items:center;transition:background .2s,color .2s}
+.setas button:hover{background:#fff;color:var(--pink)}
+.setas svg{width:22px;height:22px}
+.trilho{display:flex;gap:20px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding:0 4vw 8px calc((100vw - min(1320px,92vw))/2);scroll-padding-left:calc((100vw - min(1320px,92vw))/2)}
+.trilho::-webkit-scrollbar{display:none}
+.fofo{flex:0 0 clamp(260px,24vw,340px);scroll-snap-align:start;background:var(--ink);border-radius:22px;overflow:hidden;display:flex;flex-direction:column;transition:transform .3s cubic-bezier(.16,1,.3,1)}
+.fofo:hover{transform:translateY(-6px) rotate(-.6deg)}
+.fofo .img{aspect-ratio:4/5;overflow:hidden;background:#2a2c33}
+.fofo .img img{width:100%;height:100%;object-fit:cover}
+.fofo h3{font-weight:800;font-size:18px;line-height:1.3;padding:20px 22px 24px}
 
-/* ---------- babado ---------- */
-.babado{background:var(--ink);color:#fff}
-.babado .lead{color:#c9cbd2}
-.babado .btn-line{border-color:#fff;color:#fff}
-.babado .btn-line:hover{background:#fff;color:var(--ink)}
-.rail{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(280px,1fr);gap:22px;overflow-x:auto;padding-bottom:14px;scroll-snap-type:x mandatory}
-.rail::-webkit-scrollbar{height:8px}.rail::-webkit-scrollbar-thumb{background:#3a3c44;border-radius:9px}
-.fofoca{scroll-snap-align:start;text-decoration:none;position:relative;display:block}
-.fofoca .img{aspect-ratio:4/5;border-radius:22px;overflow:hidden;background:#24262c}
-.fofoca .img img{width:100%;height:100%;object-fit:cover}
-.fofoca h3{font-size:19px;font-weight:800;line-height:1.3;margin-top:16px;padding-right:12px}
-.fofoca .reacao{position:absolute;top:-14px;right:-8px;width:92px;filter:drop-shadow(0 6px 0 rgba(0,0,0,.35));transform:rotate(6deg)}
+/* Cida (IA) */
+.ia{background:var(--ink);color:#fff}
+.ia .wrap{display:grid;grid-template-columns:1.05fr .95fr;gap:70px;align-items:center}
+.ia .tit em{font-style:normal;color:var(--sol)}
+.ia .sub{color:#c8cad1;margin-bottom:34px}
+.selo{display:inline-flex;align-items:center;gap:9px;font-weight:800;font-size:14px;color:var(--ink);background:var(--sol);border-radius:999px;padding:8px 14px;margin-bottom:26px}
+.selo svg{width:16px;height:16px}
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:30px}
+.chips button{background:transparent;color:#fff;border:2px solid #4a4c54;border-radius:999px;padding:11px 16px;font-weight:700;font-size:15px;cursor:pointer;transition:border-color .2s,background .2s,color .2s}
+.chips button:hover{border-color:var(--sol);background:var(--sol);color:var(--ink)}
+.pill-pink{background:var(--pink);color:#fff}
+.chat{background:#1d1f24;border-radius:30px;padding:28px;box-shadow:0 30px 60px rgba(0,0,0,.35)}
+.chat-top{display:flex;align-items:center;gap:16px;padding-bottom:22px;border-bottom:1px solid #2e3037;margin-bottom:22px}
+.rosto{width:84px;height:84px;border-radius:50%;padding:4px;background:var(--sol);flex:none}
+.rosto .clip{position:relative;width:100%;height:100%;border-radius:50%;overflow:hidden;clip-path:circle(50%);isolation:isolate;background:#7a3a22}
+.rosto img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%}
+.rosto .f{opacity:0}
+.chat-top b{font-family:'Lilita One';font-weight:400;font-size:28px;display:block;line-height:1}
+.chat-top small{display:flex;align-items:center;gap:7px;font-weight:700;font-size:13px;color:#9fe3b1;margin-top:6px}
+.chat-top small i{width:8px;height:8px;border-radius:50%;background:#7CF29C}
+.msgs{display:flex;flex-direction:column;gap:12px;min-height:270px}
+.msg{max-width:84%;padding:13px 17px;border-radius:20px;font-weight:600;font-size:15.5px;line-height:1.45;opacity:0;transform:translateY(8px);transition:opacity .35s,transform .35s cubic-bezier(.16,1,.3,1)}
+.msg.in{opacity:1;transform:none}
+.msg.dela{background:#2a2c33;border-bottom-left-radius:6px}
+.msg.eu{background:var(--azul);align-self:flex-end;border-bottom-right-radius:6px}
+.digitando{display:inline-flex;gap:5px}
+.digitando i{width:7px;height:7px;border-radius:50%;background:#9a9ca4;animation:pula 1s infinite}
+.digitando i:nth-child(2){animation-delay:.15s}.digitando i:nth-child(3){animation-delay:.3s}
+@keyframes pula{50%{transform:translateY(-4px);opacity:.5}}
+.chat-cta{margin-top:22px;width:100%;justify-content:center}
 
-/* ---------- instagram ---------- */
-.feed{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-.feed a{position:relative;aspect-ratio:1;overflow:hidden;border-radius:6px;background:#ddd}
-.feed img{width:100%;height:100%;object-fit:cover}
-.feed .cap{position:absolute;inset:0;background:rgba(37,88,255,.94);color:#fff;font-weight:700;font-size:15px;line-height:1.35;padding:18px;display:flex;align-items:flex-end;opacity:0;transition:opacity .2s}
-.feed a:hover .cap,.feed a:focus-visible .cap{opacity:1}
-.feed .tipo{position:absolute;top:10px;right:10px;width:22px;height:22px;color:#fff;filter:drop-shadow(0 1px 2px rgba(0,0,0,.5))}
+/* instagram */
+.grade{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.grade a{position:relative;aspect-ratio:1;overflow:hidden;border-radius:14px;background:#ddd}
+.grade a:first-child{grid-column:span 2;grid-row:span 2}
+.grade img{width:100%;height:100%;object-fit:cover;transition:transform .6s cubic-bezier(.16,1,.3,1)}
+.grade a:hover img{transform:scale(1.06)}
+.grade .leg{position:absolute;left:0;right:0;bottom:0;padding:14px;font-weight:700;font-size:13.5px;line-height:1.3;color:#fff;background:linear-gradient(transparent,rgba(18,19,22,.9));opacity:0;transform:translateY(10px);transition:opacity .25s,transform .25s}
+.grade a:hover .leg,.grade a:focus-visible .leg{opacity:1;transform:none}
+.grade a:first-child .leg{font-size:17px;padding:22px}
+.grade .tipo{position:absolute;top:10px;right:10px;width:20px;height:20px;color:#fff;filter:drop-shadow(0 1px 2px rgba(0,0,0,.55))}
 
-/* ---------- rodapé ---------- */
-footer{background:var(--azul);color:#fff;padding:72px 0 140px}
-footer .wrap{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px}
-footer .logo{height:80px;width:auto;margin-bottom:18px}
-footer h5{font-family:'Lilita One';font-weight:400;font-size:22px;margin-bottom:10px}
-footer p,footer a{font-weight:600;font-size:15px;line-height:1.6}
-footer .grupo{opacity:.85;font-size:14px;margin-top:6px}
+/* ================= rodapé ================= */
+footer{background:var(--azul);color:#fff;padding:90px 0 0;overflow:hidden}
+.foot{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:40px;padding-bottom:40px}
+.foot .logo{height:76px;width:auto;margin-bottom:16px}
+.foot h5{font-weight:800;font-size:14px;opacity:.7;margin-bottom:12px}
+.foot p,.foot a{font-weight:600;font-size:16px;line-height:1.65}
+.foot a:hover{text-decoration:underline;text-underline-offset:4px}
+.gigante{font-family:'Lilita One';font-size:clamp(120px,24vw,380px);line-height:.8;color:transparent;-webkit-text-stroke:2px rgba(255,255,255,.5);white-space:nowrap;text-align:center}
+.creditos{border-top:1px solid rgba(255,255,255,.2);padding:18px 0 110px;font-size:13px;font-weight:600;opacity:.85;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.creditos a{text-decoration:underline;text-underline-offset:3px}
 
-/* ---------- player fixo ---------- */
-.player{position:fixed;left:50%;bottom:18px;transform:translate(-50%,220%);visibility:hidden;z-index:50;background:var(--ink);color:#fff;border-radius:999px;display:flex;align-items:center;gap:16px;padding:10px 14px 10px 10px;box-shadow:0 14px 30px rgba(0,0,0,.3);transition:transform .45s cubic-bezier(.34,1.56,.64,1);width:min(560px,94vw)}
+/* ================= player fixo ================= */
+.player{position:fixed;left:50%;bottom:18px;z-index:50;transform:translate(-50%,220%);visibility:hidden;background:var(--ink);color:#fff;border-radius:999px;display:flex;align-items:center;gap:14px;padding:9px 18px 9px 9px;box-shadow:0 18px 40px rgba(0,0,0,.35);transition:transform .5s cubic-bezier(.34,1.56,.64,1);width:min(520px,94vw)}
 .player.show{transform:translate(-50%,0);visibility:visible}
-.player .pp{width:52px;height:52px;border-radius:50%;border:0;background:var(--sol);display:grid;place-items:center;cursor:pointer;flex:none}
-.player .pp svg{width:22px;height:22px}
+.player .pp{width:50px;height:50px;border-radius:50%;border:0;background:var(--sol);display:grid;place-items:center;cursor:pointer;flex:none}
+.player .pp svg{width:20px;height:20px}
 .player .info{flex:1;min-width:0}
-.player b{font-family:'Lilita One';font-weight:400;font-size:20px;display:block;line-height:1}
-.player small{font-weight:700;font-size:13px;opacity:.8}
+.player b{font-family:'Lilita One';font-weight:400;font-size:19px;display:block;line-height:1}
+.player small{font-weight:700;font-size:12.5px;opacity:.75}
 .eq{display:flex;gap:3px;align-items:flex-end;height:22px}
-.eq i{width:4px;background:var(--pink);border-radius:2px;height:30%;animation:eq .9s ease-in-out infinite}
-.eq i:nth-child(2){animation-delay:-.3s}.eq i:nth-child(3){animation-delay:-.6s}.eq i:nth-child(4){animation-delay:-.15s}
-.player.paused .eq i{animation-play-state:paused}
-@keyframes eq{50%{height:100%}}
-.player input{width:90px;accent-color:var(--sol)}
+.eq i{width:4px;background:var(--pink);border-radius:2px;height:100%;transform-origin:bottom;animation:barra .5s ease-in-out infinite alternate}
+.eq i:nth-child(2){animation-duration:.42s}.eq i:nth-child(3){animation-duration:.61s}.eq i:nth-child(4){animation-duration:.37s}
+.player.paused .eq i{animation:none;transform:scaleY(.3)}
+.player input{width:86px;accent-color:var(--sol)}
 
-/* ---------- modal Cida ---------- */
-.modal{position:fixed;inset:0;z-index:80;background:rgba(18,19,22,.72);display:none;align-items:center;justify-content:center;padding:3vh 3vw}
+/* ================= conversa com a Cida ================= */
+.modal{position:fixed;inset:0;z-index:80;background:rgba(18,19,22,.78);display:none;align-items:center;justify-content:center;padding:3vh 3vw}
 .modal.open{display:flex}
-.modal .box{position:relative;width:min(1180px,100%);height:min(760px,94vh);border-radius:28px;overflow:hidden;border:6px solid var(--ink);background:var(--azul)}
+.modal .box{position:relative;width:min(1180px,100%);height:min(760px,94vh);border-radius:28px;overflow:hidden;background:var(--azul);animation:abre .45s cubic-bezier(.16,1,.3,1)}
+@keyframes abre{from{transform:translateY(24px) scale(.98);opacity:0}}
 .modal iframe{width:100%;height:100%;border:0;display:block}
 .modal .x{position:absolute;top:14px;right:14px;z-index:2;width:46px;height:46px;border-radius:50%;border:0;background:var(--ink);color:#fff;font-size:24px;cursor:pointer}
 
-/* ---------- responsivo ---------- */
-@media (max-width:900px){
-  .top nav{display:none}
-  .top .wrap{height:80px}.top .logo{height:50px}.top .btn{margin-left:auto}
-  .hero{padding-top:90px}
-  .hero .wrap{min-height:auto}
-  .cida-hero{position:relative;right:auto;height:auto;width:56%;margin:-4% 0 -6% auto;order:-1;z-index:1}
-  .slogan{position:relative;z-index:2}
-  .dial-row{flex-wrap:wrap;gap:12px;max-width:none}
-  .dial-row p{flex-basis:100%;font-size:15px}
-  .freq{font-size:34vw}
-  .cida .wrap,.news{grid-template-columns:1fr;gap:36px}
-  .cida-face{width:min(320px,70vw);margin:0 auto}
-  .feed{grid-template-columns:repeat(2,1fr)}
-  footer .wrap{grid-template-columns:1fr 1fr}
-  .modal{padding:0}.modal .box{height:100%;border-radius:0;border:0}
+/* ================= responsivo ================= */
+@media (max-width:1000px){
+  .top nav{display:none}.top .pill{margin-left:auto}
+  .hero-grid{grid-template-columns:1fr;gap:34px}
+  .hero-side{flex-direction:row;justify-content:flex-start;gap:18px}
+  .hero-side p{text-align:left}
+  .disco{width:120px}
+  .dialband .wrap{grid-template-columns:1fr;gap:12px}
+  .mosaico{grid-auto-rows:130px}
+  .t-lead,.t-a,.t-tag,.t-s{grid-column:span 12}
+  .t-lead{grid-row:span 3}
+  .ia .wrap{grid-template-columns:1fr;gap:44px}
+  .grade{grid-template-columns:repeat(3,1fr)}
+  .foot{grid-template-columns:1fr 1fr}
+  .modal{padding:0}.modal .box{height:100%;border-radius:0}
   .player input{display:none}
+  .sec{padding:80px 0}
 }
-@media (prefers-reduced-motion:reduce){.letreiro div,.eq i{animation:none}.needle{transition:none!important}}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .manchete span i{transform:none}
+}
 </style>
 </head>
 <body>
 
-<header class="top">
+<header class="top" id="top">
   <div class="wrap">
-    <a href="#"><img class="logo" src="../cida/img/logo.webp" alt="Rádio Cidade 97.7 FM"></a>
+    <a href="#" aria-label="Rádio Cidade, início"><img class="logo" src="../cida/img/logo.webp" alt="Rádio Cidade 97.7 FM"></a>
     <nav aria-label="Seções">
       <a href="#noticias">Notícias</a>
       <a href="#babado">Babado</a>
+      <a href="#cida">Cida IA</a>
       <a href="#instagram">Instagram</a>
-      <a href="#cida">Fala com a Cida</a>
     </nav>
-    <button class="btn btn-play js-play" type="button"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"/></svg>Ouvir ao vivo</button>
+    <button class="pill js-play" type="button"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"/></svg><span>Ouvir ao vivo</span></button>
   </div>
 </header>
 
 <main>
 <section class="hero" aria-label="Rádio Cidade ao vivo">
-  <div class="wrap">
-    <img class="cida-hero" src="../cida/img/corpo.webp" alt="Cida, a personagem da Rádio Cidade">
-    <p class="slogan">Toca aqui, toca na Cidade.</p>
-    <h1 class="disp freq" aria-label="97.7 FM"><span id="freq">97.7</span><small>FM</small></h1>
-    <div class="dial" aria-hidden="true">
-      <svg id="dialsvg" viewBox="0 0 1000 76" preserveAspectRatio="none"></svg>
-      <div class="needle" id="needle"></div>
+  <div class="onda" id="onda" aria-hidden="true"></div>
+  <div class="wrap hero-grid">
+    <h1 class="d manchete"><span><i>Toca aqui,</i></span><span><i>toca na</i></span><span><i>Cidade.</i></span></h1>
+    <div class="hero-side">
+      <button class="disco js-play" id="disco" type="button" aria-label="Ouvir a Rádio Cidade ao vivo">
+        <svg class="anel" viewBox="0 0 200 200" aria-hidden="true"><defs><path id="circ" d="M100,100 m-82,0 a82,82 0 1,1 164,0 a82,82 0 1,1 -164,0"/></defs><text fill="#fff" font-family="Montserrat" font-weight="800" font-size="15.5" letter-spacing="3.2"><textPath href="#circ">OUÇA AO VIVO · 97.7 FM · RÁDIO CIDADE · </textPath></text></svg>
+        <span class="miolo"><svg id="discoIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"/></svg></span>
+      </button>
+      <p>Os hits pop do momento, o dia inteiro, na Grande Vitória.</p>
     </div>
-    <div class="dial-row">
-      <button class="btn btn-play js-play" type="button"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"/></svg>Ouvir ao vivo</button>
-      <span class="onair"><i></i>No ar agora</span>
-      <p>Os hits pop do momento, o dia inteiro, em Vila Velha e em toda a Grande Vitória.</p>
+  </div>
+  <div class="dialband">
+    <div class="wrap">
+      <div class="noar"><span class="dot"></span><div><b id="freq">97.7</b><small>No ar agora, FM</small></div></div>
+      <div class="dial" aria-hidden="true"><svg id="dialsvg" viewBox="0 0 1000 58" preserveAspectRatio="none"></svg><div class="agulha" id="agulha"></div></div>
     </div>
   </div>
 </section>
 
 <div class="letreiro" aria-label="Últimos babados"><div id="letreiro"></div></div>
 
-<section class="cida" id="cida">
+<section class="sec" id="noticias">
   <div class="wrap">
-    <div class="cida-face" id="cidaFace">
-      <img src="../cida/img/boca-fechada.webp" alt="Rosto da Cida">
-      <img class="fala" data-m="e" src="../cida/img/boca-e.webp" alt="">
-      <img class="fala" data-m="a" src="../cida/img/boca-a.webp" alt="">
-      <img class="fala" data-m="i" src="../cida/img/boca-i.webp" alt="">
+    <div class="cab">
+      <div><h2 class="d tit">Agora na Cidade.</h2><p class="sub">O que rolou na cidade e nos eventos da rádio.</p></div>
+      <a class="link" href="https://hfnews.com.br/noticias/" target="_blank" rel="noopener">Ver todas as notícias</a>
     </div>
+    <div class="mosaico" id="mosaico"></div>
+  </div>
+</section>
+
+<section class="sec babado" id="babado">
+  <div class="wrap">
+    <div class="cab">
+      <div><h2 class="d tit">Babado.</h2><p class="sub">As fofocas da semana, direto do nosso Instagram. Fofoca, sim. Fake, nunca.</p></div>
+      <div class="setas"><button type="button" id="ant" aria-label="Babado anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button><button type="button" id="prox" aria-label="Próximo babado"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button></div>
+    </div>
+  </div>
+  <div class="trilho" id="trilho"></div>
+</section>
+
+<section class="sec ia" id="cida">
+  <div class="wrap">
     <div>
-      <h2 class="disp h2">Pergunta pra Cida.</h2>
-      <p class="lead">Ela sabe o que tá tocando, conta o babado do dia e indica a próxima música. Fala com ela por texto ou por voz.</p>
-      <div class="perguntas">
+      <span class="selo"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.9 5.6L19.5 9l-5.6 1.9L12 16.5l-1.9-5.6L4.5 9l5.6-1.4z"/></svg>Inteligência artificial da rádio</span>
+      <h2 class="d tit">Conheça a <em>Cida.</em></h2>
+      <p class="sub">A IA da Rádio Cidade. Ela sabe o que está tocando, conta o babado do dia e indica a próxima música. Converse por texto ou por voz.</p>
+      <div class="chips">
         <button type="button" data-q="Me conta um babado">Me conta um babado</button>
         <button type="button" data-q="O que tá tocando?">O que tá tocando?</button>
         <button type="button" data-q="Me indica uma música">Me indica uma música</button>
         <button type="button" data-q="Quem é você?">Quem é você?</button>
       </div>
-      <button class="btn btn-cida js-cida" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>Conversar com a Cida</button>
+      <button class="pill pill-pink js-cida" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>Conversar com a Cida</button>
+    </div>
+    <div class="chat" id="chatDemo" aria-label="Exemplo de conversa com a Cida">
+      <div class="chat-top">
+        <div class="rosto"><div class="clip" id="rosto">
+          <img src="../cida/img/boca-fechada.webp" alt="Cida">
+          <img class="f" data-m="leve" src="../cida/img/boca-leve.webp" alt="">
+          <img class="f" data-m="e" src="../cida/img/boca-e.webp" alt="">
+          <img class="f" data-m="a" src="../cida/img/boca-a.webp" alt="">
+          <img class="f" data-m="i" src="../cida/img/boca-i.webp" alt="">
+        </div></div>
+        <div><b>Cida</b><small><i></i>Online agora</small></div>
+      </div>
+      <div class="msgs" id="msgs"></div>
+      <button class="pill chat-cta js-cida" type="button">Abrir conversa</button>
     </div>
   </div>
 </section>
 
-<section id="noticias">
+<section class="sec" id="instagram">
   <div class="wrap">
-    <div class="head-row">
-      <div><h2 class="disp h2">Só notícia boa.</h2><p class="lead">O que rolou na cidade e nos eventos da rádio.</p></div>
-      <a class="btn btn-line" href="https://hfnews.com.br/noticias/" target="_blank" rel="noopener">Ver todas as notícias</a>
+    <div class="cab">
+      <div><h2 class="d tit">@cidade.plus</h2><p class="sub">Os últimos posts do nosso Instagram.</p></div>
+      <a class="link" href="https://www.instagram.com/cidade.plus/" target="_blank" rel="noopener">Seguir no Instagram</a>
     </div>
-    <div class="news" id="news"></div>
-  </div>
-</section>
-
-<section class="babado" id="babado">
-  <div class="wrap">
-    <div class="head-row">
-      <div><h2 class="disp h2">Babado.</h2><p class="lead">O que a Cida contou pras amigas essa semana. Fofoca, sim. Fake, nunca.</p></div>
-    </div>
-    <div class="rail" id="rail"></div>
-  </div>
-</section>
-
-<section id="instagram">
-  <div class="wrap">
-    <div class="head-row">
-      <div><h2 class="disp h2">@cidade.plus</h2><p class="lead">Os últimos posts do nosso Instagram.</p></div>
-      <a class="btn btn-line" href="https://www.instagram.com/cidade.plus/" target="_blank" rel="noopener">Seguir no Instagram</a>
-    </div>
-    <div class="feed" id="feed"></div>
+    <div class="grade" id="grade"></div>
   </div>
 </section>
 </main>
 
 <footer>
   <div class="wrap">
-    <div>
-      <img class="logo" src="../cida/img/logo.webp" alt="Rádio Cidade 97.7 FM">
-      <p>Toca aqui, toca na Cidade.</p>
-      <p class="grupo">Uma rádio do <a href="https://hfnews.com.br/" target="_blank" rel="noopener">Grupo HF News</a></p>
+    <div class="foot">
+      <div><img class="logo" src="../cida/img/logo.webp" alt="Rádio Cidade 97.7 FM"><p>Toca aqui, toca na Cidade.</p></div>
+      <div><h5>Contato</h5><p><a href="tel:+552734212015">(27) 3421-2015</a><br><a href="mailto:portal@hfnews.com.br">portal@hfnews.com.br</a></p></div>
+      <div><h5>Endereço</h5><p>Rua Comissário José Dantas de Mello, 21<br>Vila Velha, ES, 29102-920</p></div>
+      <div><h5>Siga</h5><p><a href="https://www.instagram.com/cidade.plus/" target="_blank" rel="noopener">@cidade.plus</a><br><a href="https://www.instagram.com/grupohfnews/" target="_blank" rel="noopener">@grupohfnews</a></p></div>
     </div>
-    <div><h5>Contato</h5><p><a href="tel:+552734212015">(27) 3421-2015</a><br><a href="mailto:portal@hfnews.com.br">portal@hfnews.com.br</a></p></div>
-    <div><h5>Endereço</h5><p>Rua Comissário José Dantas de Mello, 21<br>Vila Velha, ES · 29102-920</p></div>
-    <div><h5>Siga</h5><p><a href="https://www.instagram.com/cidade.plus/" target="_blank" rel="noopener">@cidade.plus</a><br><a href="https://www.instagram.com/grupohfnews/" target="_blank" rel="noopener">@grupohfnews</a></p></div>
+    <div class="gigante" aria-hidden="true">97.7 FM</div>
   </div>
+  <div class="wrap creditos"><span>Rádio Cidade 97.7 FM, uma rádio do <a href="https://hfnews.com.br/" target="_blank" rel="noopener">Grupo HF News</a>.</span><span>Vila Velha, Espírito Santo</span></div>
 </footer>
 
 <div class="player paused" id="player" role="region" aria-label="Player da rádio">
@@ -269,11 +337,11 @@ footer .grupo{opacity:.85;font-size:14px;margin-top:6px}
 </div>
 
 <div class="modal" id="modal" role="dialog" aria-modal="true" aria-label="Conversa com a Cida">
-  <div class="box"><button class="x" id="fechar" type="button" aria-label="Fechar">×</button><iframe id="cidaFrame" title="Cida" allow="autoplay; microphone"></iframe></div>
+  <div class="box"><button class="x" id="fechar" type="button" aria-label="Fechar">×</button><iframe id="cidaFrame" title="Conversa com a Cida" allow="autoplay; microphone"></iframe></div>
 </div>
 
 <script>
-// ---------- conteúdo (da página atual da rádio) ----------
+// ---------- conteúdo (copiado da página atual da rádio) ----------
 const UP='https://hfnews.com.br/wp-content/uploads/';
 const NEWS=[
  ['InovaWeek encerra programação com Show de Talentos, convidado especial e muita música','28 de setembro de 2026','2026/09/28/inovaweek-encerra-programacao-com-show-de-talentos-convidado-especial-e-muita-musica/','2026/09/9-1.png'],
@@ -297,81 +365,94 @@ const POSTS=[
  ['Netinho: pra viver a emoção, meu amor','reel/DefTOXZB9B4','847998896_1426706545481448_170279460541526236_nlow.webp','vid'],
  ['Lauana Prado mostra o rostinho do filho, Dom','p/DefGdxvGup5','848933398_18114704261596028_1287239732511738895_nlow.webp','car'],
  ['Dua Lipa e Shakira juntas no palco em Madri','reel/DeP2ZDWhcsh','840824139_2470781296746430_6709331992021375856_nlow.webp','vid'],
+ ['Olivia Dean é processada por causa de "I\'ve Seen It"','p/DePh6b4lmcz','839884640_18113841350596028_6742963553939349271_nlow.webp','car'],
 ];
-const BABADO=[ // [índice do post, reação da Cida]
- [3,'desconfiada'],[2,'chocada'],[8,'feliz'],[4,'curtindo'],[11,'rindo'],[6,'piscadinha'],
- [null,'chocada','Olivia Dean é processada por causa de "I\'ve Seen It"','p/DePh6b4lmcz','839884640_18113841350596028_6742963553939349271_nlow.webp'],
-];
+const BABADO=[3,2,8,4,12,6,11,10];
 const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
-// notícias: 1 destaque + lista
-const [n0,...nr]=NEWS;
-document.getElementById('news').innerHTML=
- `<a class="news-main" href="https://hfnews.com.br/${n0[2]}" target="_blank" rel="noopener"><div class="img"><img src="${UP+n0[3]}" alt="" loading="lazy"></div><h3>${esc(n0[0])}</h3><span class="date">${n0[1]}</span></a>
-  <ul class="news-list">${nr.map(n=>`<li><a href="https://hfnews.com.br/${n[2]}" target="_blank" rel="noopener"><img src="${UP+n[3]}" alt="" loading="lazy"><div><h4>${esc(n[0])}</h4><span class="date">${n[1]}</span></div></a></li>`).join('')}</ul>`;
+// mosaico de notícias
+const art=(n,cls)=>`<a class="tile ${cls}" href="https://hfnews.com.br/${n[2]}" target="_blank" rel="noopener"><img src="${UP+n[3]}" alt="" loading="lazy"><div class="txt"><h3>${esc(n[0])}</h3><time>${n[1]}</time></div></a>`;
+document.getElementById('mosaico').innerHTML=
+  art(NEWS[0],'t-lead')+art(NEWS[1],'t-a')+
+  `<div class="tile t-tag"><b>Só notícia boa.</b><span>Eventos, cultura e tudo o que a rádio apoia na Grande Vitória.</span></div>`+
+  art(NEWS[2],'t-s')+art(NEWS[3],'t-s')+art(NEWS[4],'t-s');
 
-// babado com a reação da Cida
-document.getElementById('rail').innerHTML=BABADO.map(b=>{
-  const p=b[0]!==null?POSTS[b[0]]:[b[2],b[3],b[4]];
-  return `<a class="fofoca" href="https://www.instagram.com/${p[1]}/" target="_blank" rel="noopener"><div class="img"><img src="${UP+IG+p[2]}" alt="" loading="lazy"></div><img class="reacao" src="../cida/img/expc-${b[1]}.webp" alt="Cida ${b[1]}"><h3>${esc(p[0])}</h3></a>`}).join('');
+// babado
+const trilho=document.getElementById('trilho');
+trilho.innerHTML=BABADO.map(i=>{const p=POSTS[i];
+  return `<a class="fofo" href="https://www.instagram.com/${p[1]}/" target="_blank" rel="noopener"><div class="img"><img src="${UP+IG+p[2]}" alt="" loading="lazy"></div><h3>${esc(p[0])}</h3></a>`}).join('');
+const passo=()=>trilho.querySelector('.fofo').getBoundingClientRect().width+20;
+document.getElementById('prox').onclick=()=>trilho.scrollBy({left:passo(),behavior:'smooth'});
+document.getElementById('ant').onclick=()=>trilho.scrollBy({left:-passo(),behavior:'smooth'});
 
-// feed do Instagram
+// instagram
 const ICON={vid:'<svg class="tipo" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>',car:'<svg class="tipo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="7" y="7" width="13" height="13" rx="2"/><path d="M4 16V5a1 1 0 0 1 1-1h11"/></svg>',img:''};
-document.getElementById('feed').innerHTML=POSTS.map(p=>`<a href="https://www.instagram.com/${p[1]}/" target="_blank" rel="noopener" aria-label="${esc(p[0])}"><img src="${UP+IG+p[2]}" alt="" loading="lazy">${ICON[p[3]]}<span class="cap">${esc(p[0])}</span></a>`).join('');
+document.getElementById('grade').innerHTML=POSTS.slice(0,12).map(p=>`<a href="https://www.instagram.com/${p[1]}/" target="_blank" rel="noopener" aria-label="${esc(p[0])}"><img src="${UP+IG+p[2]}" alt="" loading="lazy">${ICON[p[3]]}<span class="leg">${esc(p[0])}</span></a>`).join('');
 
 // letreiro
-const L=POSTS.slice(1,9).map(p=>`<span>${esc(p[0])}</span>`).join('');
+const L=POSTS.slice(1,10).map(p=>`<span>${esc(p[0])}</span>`).join('');
 document.getElementById('letreiro').innerHTML=L+L;
 
-// ---------- dial ----------
+// onda viva atrás da manchete
+(function(){let h='';for(let i=0;i<48;i++){const a=20+Math.abs(Math.sin(i*.55)*60)+((i*37)%23);h+=`<i style="--h:${a}%;--t:${(.6+((i*13)%9)/10).toFixed(2)}s"></i>`}document.getElementById('onda').innerHTML=h})();
+
+// dial: a agulha sintoniza 97.7 quando a página abre
 (function(){
   let s='';for(let f=880;f<=1080;f+=2){const x=(f-880)/200*1000,big=f%10===0;
-    s+=`<line x1="${x}" x2="${x}" y1="${big?14:30}" y2="56" stroke="#fff" stroke-opacity="${big?1:.55}" stroke-width="${big?3:2}"/>`;
-    if(f%20===0)s+=`<text x="${x}" y="76" fill="#fff" font-family="Montserrat" font-weight="700" font-size="15" text-anchor="${f===880?'start':f===1080?'end':'middle'}">${f/10}</text>`}
+    s+=`<line x1="${x}" x2="${x}" y1="${big?6:18}" y2="38" stroke="#fff" stroke-opacity="${big?.95:.4}" stroke-width="${big?3:2}"/>`;
+    if(f%20===0)s+=`<text x="${x}" y="56" fill="#fff" fill-opacity=".7" font-family="Montserrat" font-weight="700" font-size="13" text-anchor="${f===880?'start':f===1080?'end':'middle'}">${f/10}</text>`}
   document.getElementById('dialsvg').innerHTML=s;
-  const needle=document.getElementById('needle'),freq=document.getElementById('freq');
-  const pos=f=>`${(f-88)/20*100}%`;
-  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if(reduce){needle.style.setProperty('--x',pos(97.7));return}
-  // sintonizando: a agulha corre de 88 até 97.7 e assenta com mola
-  const t0=performance.now(),D=1600;
-  function spring(t){const z=.55,w=2*Math.PI*1.1,wd=w*Math.sqrt(1-z*z);return 1-Math.exp(-z*w*t)*(Math.cos(wd*t)+z*w/wd*Math.sin(wd*t))}
-  function tick(now){const t=(now-t0)/1000,k=Math.min(spring(t),1.04),f=88+(97.7-88)*k;
-    needle.style.setProperty('--x',pos(f));freq.textContent=(Math.round(Math.min(f,108)*10)/10).toFixed(1);
-    if(now-t0<D)requestAnimationFrame(tick);else{needle.style.setProperty('--x',pos(97.7));freq.textContent='97.7'}}
-  requestAnimationFrame(tick);
+  const ag=document.getElementById('agulha'),fq=document.getElementById('freq'),pos=f=>`${(f-88)/20*100}%`;
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches){ag.style.setProperty('--x',pos(97.7));return}
+  const t0=performance.now();
+  const spring=t=>{const z=.5,w=2*Math.PI*.9,wd=w*Math.sqrt(1-z*z);return 1-Math.exp(-z*w*t)*(Math.cos(wd*t)+z*w/wd*Math.sin(wd*t))};
+  (function tick(now){const t=Math.max(0,(now-t0)/1000-.35),f=88+(97.7-88)*spring(t);ag.style.setProperty('--x',pos(f));fq.textContent=f.toFixed(1);
+    if(t<2.4)requestAnimationFrame(tick);else{ag.style.setProperty('--x',pos(97.7));fq.textContent='97.7'}})(t0);
 })();
+
+// topo fica sólido ao rolar
+const topo=document.getElementById('top');addEventListener('scroll',()=>topo.classList.toggle('solid',scrollY>40),{passive:true});
 
 // ---------- player ao vivo ----------
 const STREAM='https://9158.brasilstream.com.br/stream';
 const audio=new Audio();audio.preload='none';audio.volume=.8;
-const player=document.getElementById('player'),pp=document.getElementById('pp'),ppIcon=document.getElementById('ppIcon'),pstatus=document.getElementById('pstatus');
+const player=document.getElementById('player'),pp=document.getElementById('pp'),ppIcon=document.getElementById('ppIcon'),pstatus=document.getElementById('pstatus'),disco=document.getElementById('disco'),discoIcon=document.getElementById('discoIcon');
 const PLAY='<path d="M7 4.5v15l13-7.5z"/>',PAUSE='<path d="M6 4h4v16H6zM14 4h4v16h-4z"/>';
-function setUI(on,txt){player.classList.toggle('paused',!on);ppIcon.innerHTML=on?PAUSE:PLAY;pp.setAttribute('aria-label',on?'Pausar':'Tocar');pstatus.textContent=txt||(on?'Ao vivo':'Pausado')}
+function setUI(on,txt){player.classList.toggle('paused',!on);ppIcon.innerHTML=discoIcon.innerHTML=on?PAUSE:PLAY;disco.classList.toggle('on',on);
+  pp.setAttribute('aria-label',on?'Pausar':'Tocar');pstatus.textContent=txt||(on?'Ao vivo':'Pausado');
+  document.querySelectorAll('.top .js-play span').forEach(s=>s.textContent=on?'Pausar':'Ouvir ao vivo')}
 async function play(){player.classList.add('show');setUI(true,'Conectando…');audio.src=STREAM+'?t='+Date.now();
   try{await audio.play();setUI(true)}catch(e){setUI(false,'Não conectou. Toque de novo.')}}
 function pause(){audio.pause();audio.removeAttribute('src');audio.load();setUI(false)}
 document.querySelectorAll('.js-play').forEach(b=>b.onclick=()=>audio.paused?play():pause());
 pp.onclick=()=>audio.paused?play():pause();
 document.getElementById('vol').oninput=e=>audio.volume=+e.target.value;
-audio.onerror=()=>{if(!audio.paused||player.classList.contains('show'))setUI(false,'Sinal fora do ar. Tente de novo.')};
+audio.onerror=()=>{if(player.classList.contains('show')&&audio.getAttribute('src'))setUI(false,'Sinal fora do ar. Tente de novo.')};
 
 // ---------- Cida ----------
 const modal=document.getElementById('modal'),frame=document.getElementById('cidaFrame');
-let wasPlaying=false;
-function abrirCida(q){wasPlaying=!audio.paused;if(wasPlaying)audio.volume=.15;
-  frame.src='../cida/?embed=1'+(q?'&q='+encodeURIComponent(q):'');modal.classList.add('open');document.getElementById('fechar').focus()}
+function abrirCida(q){if(!audio.paused)audio.volume=.15;frame.src='../cida/?embed=1'+(q?'&q='+encodeURIComponent(q):'');modal.classList.add('open');document.getElementById('fechar').focus()}
 function fecharCida(){modal.classList.remove('open');frame.src='about:blank';audio.volume=+document.getElementById('vol').value}
-document.querySelectorAll('.perguntas button').forEach(b=>b.onclick=()=>abrirCida(b.dataset.q));
-document.querySelector('.js-cida').onclick=()=>abrirCida();
+document.querySelectorAll('.chips button').forEach(b=>b.onclick=()=>abrirCida(b.dataset.q));
+document.querySelectorAll('.js-cida').forEach(b=>b.onclick=()=>abrirCida());
 document.getElementById('fechar').onclick=fecharCida;
 modal.onclick=e=>{if(e.target===modal)fecharCida()};
 addEventListener('keydown',e=>{if(e.key==='Escape'&&modal.classList.contains('open'))fecharCida()});
 
-// a Cida "fala" quando a seção aparece
-(function(){const face=document.getElementById('cidaFace'),f=[...face.querySelectorAll('.fala')];let done=false;
-  new IntersectionObserver(es=>{if(done||!es[0].isIntersecting)return;done=true;
-    const seq='e a i e a  e i a e  '.split('');let i=0;const iv=setInterval(()=>{f.forEach(x=>x.style.opacity=0);const m=seq[i++];const el=f.find(x=>x.dataset.m===m);if(el)el.style.opacity=1;if(i>=seq.length){clearInterval(iv);f.forEach(x=>x.style.opacity=0)}},110)},{threshold:.6}).observe(face)})();
+// demonstração da conversa: roda uma vez quando a seção aparece
+(function(){
+  const box=document.getElementById('msgs'),bocas=[...document.querySelectorAll('#rosto .f')];
+  const roteiro=[['eu','Cida, me conta um babado!'],['dela','Gente, para tudo! O Alto Leblon tá pegando fogo e a Marina tá no meio do furacão. Quer que eu te conte?'],['eu','E o que tá tocando agora?'],['dela','O lançamento da Ludmilla, o hino do Carnaval que já tem dona! Aumenta o som.']];
+  const falar=ms=>{const seq=['leve','e','a','i','e','a','leve','e','i','a'];let k=0;const iv=setInterval(()=>{bocas.forEach(b=>b.style.opacity=0);const el=bocas.find(b=>b.dataset.m===seq[k++%seq.length]);if(el)el.style.opacity=1},115);setTimeout(()=>{clearInterval(iv);bocas.forEach(b=>b.style.opacity=0)},ms)};
+  const add=(quem,html)=>{const d=document.createElement('div');d.className='msg '+quem;d.innerHTML=html;box.appendChild(d);requestAnimationFrame(()=>requestAnimationFrame(()=>d.classList.add('in')));return d};
+  const espera=ms=>new Promise(r=>setTimeout(r,ms));
+  let ok=false;
+  new IntersectionObserver(async es=>{if(ok||!es[0].isIntersecting)return;ok=true;
+    for(const [q,t] of roteiro){
+      if(q==='eu'){await espera(600);add('eu',esc(t))}
+      else{const d=add('dela','<span class="digitando"><i></i><i></i><i></i></span>');await espera(1100);d.textContent=t;falar(t.length*50);await espera(t.length*50+500)}
+    }},{threshold:.4}).observe(document.getElementById('chatDemo'));
+})();
 </script>
 </body>
 </html>
