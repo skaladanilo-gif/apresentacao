@@ -27,7 +27,7 @@ function irPara(n, dir = 1) {
   const proximo = slides[n], anterior = slides[atual];
   const sobe = proximo.dataset.entra === 'sobe' && dir > 0;
   const troca = (semFundo) => {
-    if (anterior) anterior.classList.remove('on');
+    if (anterior && !semFundo) anterior.classList.remove('on');
     // reinicia as animações de entrada
     proximo.classList.remove('on'); void proximo.offsetWidth; proximo.classList.add('on');
     if (!semFundo) bg.style.backgroundColor = proximo.dataset.bg;
@@ -46,7 +46,7 @@ function irPara(n, dir = 1) {
     proximo.style.transition = 'none'; proximo.style.transform = 'translateY(100%)';
     proximo.style.background = proximo.dataset.bg; proximo.style.borderRadius = '44px 44px 0 0';
     proximo.style.boxShadow = '0 -30px 80px rgba(0,0,0,.35)';
-    troca(true); anterior.classList.add('on');
+    troca(true);
     requestAnimationFrame(() => requestAnimationFrame(() => {
       proximo.style.transition = 'transform .95s cubic-bezier(.76,0,.24,1), border-radius .95s cubic-bezier(.76,0,.24,1)'; proximo.style.transform = 'translateY(0)'; proximo.style.borderRadius = '0';
       setTimeout(() => {
