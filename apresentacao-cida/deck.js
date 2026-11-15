@@ -87,10 +87,12 @@ const visitados = new Set();
 function aoEntrar(n) {
   const s = slides[n];
   $$('iframe[data-src]', s).forEach(f => { if (!f.src) f.src = f.dataset.src; });
+  ajustaCel();
   $('#gig').classList.toggle('on', s.id === 's6');
+  document.body.classList.toggle('primeiro', n === 0);
   if (s.id === 's1') animaDial();
-  if (s.id === 's11') contaCompat();
-  if (s.id === 's10') resetaCarta();
+  if (s.classList.contains('ficha-p')) contaCompat(s);
+  if (s.classList.contains('persona')) resetaCarta(s);
   cena.alvo(s.dataset['3d'] || null, !visitados.has(n));
   visitados.add(n);
 }
@@ -141,6 +143,10 @@ async function toca(btn) {
 $$('.js-toca').forEach(b => b.addEventListener('click', () => toca(b)));
 radio.onerror = () => { if (tocando) setToca(false); };
 
+// celular: a página da Cida roda em 430 px e é reduzida para caber
+function ajustaCel() { $$('.celular .tela').forEach(t => t.style.setProperty('--k', (t.clientWidth / 430).toFixed(4))); }
+addEventListener('resize', ajustaCel); ajustaCel();
+
 // ---------- tela cheia para site e Cida ----------
 const full = $('#full'), fullFrame = $('#fullFrame');
 $$('.js-abrir').forEach(b => b.onclick = () => {
@@ -168,34 +174,39 @@ $('#tirinha').innerHTML = BOCAS.map(([, n]) => `<span>${n}</span>`).join('');
   }, 160);
 })();
 
-// ---------- 10 · card da persona (estilo app) ----------
-const carta = $('#carta'), match = $('#match');
-let arr = null;
-function resetaCarta() { carta.style.transition = 'none'; carta.style.transform = ''; carta.style.opacity = 1; $$('.selo', carta).forEach(s => s.style.opacity = 0); match.classList.remove('on'); }
-function darMatch() {
-  carta.style.transition = 'transform .6s cubic-bezier(.16,1,.3,1),opacity .6s'; carta.style.transform = 'translateX(140%) rotate(22deg)'; carta.style.opacity = 0;
-  setTimeout(() => match.classList.add('on'), 250);
-  setTimeout(() => irPara(atual + 1, 1), 1500);
+// ---------- personas: card estilo app + ficha ----------
+function resetaCarta(sec) {
+  const carta = $('.carta', sec); if (!carta) return;
+  carta.style.transition = 'none'; carta.style.transform = ''; carta.style.opacity = 1;
+  $$('.selo', carta).forEach(x => x.style.opacity = 0); $('.match', sec).classList.remove('on');
 }
-$('#like').onclick = darMatch;
-$('.acoes .st').onclick = darMatch;
-$('.acoes .x').onclick = () => { carta.style.transition = 'transform .35s'; carta.style.transform = 'translateX(-30px) rotate(-6deg)'; setTimeout(() => { carta.style.transform = ''; }, 300); };
-carta.addEventListener('pointerdown', e => { arr = { x: e.clientX, y: e.clientY }; carta.setPointerCapture(e.pointerId); carta.style.transition = 'none'; });
-carta.addEventListener('pointermove', e => {
-  if (!arr) return; const dx = e.clientX - arr.x, dy = e.clientY - arr.y;
-  carta.style.transform = `translate(${dx}px,${dy * .3}px) rotate(${dx / 18}deg)`;
-  $('.selo.like', carta).style.opacity = Math.max(0, dx / 120); $('.selo.nope', carta).style.opacity = Math.max(0, -dx / 120);
-});
-carta.addEventListener('pointerup', e => {
-  if (!arr) return; const dx = e.clientX - arr.x; arr = null;
-  if (dx > 110) darMatch();
-  else { carta.style.transition = 'transform .5s cubic-bezier(.34,1.56,.64,1)'; carta.style.transform = ''; $$('.selo', carta).forEach(s => s.style.opacity = 0); }
+$$('.persona').forEach(sec => {
+  const carta = $('.carta', sec), match = $('.match', sec);
+  let arr = null;
+  const darMatch = () => {
+    carta.style.transition = 'transform .6s cubic-bezier(.16,1,.3,1),opacity .6s'; carta.style.transform = 'translateX(140%) rotate(22deg)'; carta.style.opacity = 0;
+    setTimeout(() => match.classList.add('on'), 250);
+    setTimeout(() => { if (slides[atual] === sec) irPara(atual + 1, 1); }, 1500);
+  };
+  $('.lk', sec).onclick = darMatch; $('.st', sec).onclick = darMatch;
+  $('.x', sec).onclick = () => { carta.style.transition = 'transform .35s'; carta.style.transform = 'translateX(-30px) rotate(-6deg)'; setTimeout(() => { carta.style.transform = ''; }, 300); };
+  carta.addEventListener('pointerdown', e => { arr = { x: e.clientX, y: e.clientY }; carta.setPointerCapture(e.pointerId); carta.style.transition = 'none'; });
+  carta.addEventListener('pointermove', e => {
+    if (!arr) return; const dx = e.clientX - arr.x, dy = e.clientY - arr.y;
+    carta.style.transform = `translate(${dx}px,${dy * .3}px) rotate(${dx / 18}deg)`;
+    $('.selo.like', carta).style.opacity = Math.max(0, dx / 120); $('.selo.nope', carta).style.opacity = Math.max(0, -dx / 120);
+  });
+  carta.addEventListener('pointerup', e => {
+    if (!arr) return; const dx = e.clientX - arr.x; arr = null;
+    if (dx > 110) darMatch();
+    else { carta.style.transition = 'transform .5s cubic-bezier(.34,1.56,.64,1)'; carta.style.transform = ''; $$('.selo', carta).forEach(x => x.style.opacity = 0); }
+  });
 });
 
-// ---------- 11 · compatibilidade ----------
-function contaCompat() {
-  const el = $('#compat'), t0 = performance.now();
-  (function f(now) { const k = Math.min(1, (now - t0 - 700) / 1600); const v = k <= 0 ? 0 : Math.round(97 * (1 - Math.pow(1 - k, 3))); el.textContent = v + '%'; if (k < 1) requestAnimationFrame(f); })(t0);
+// ---------- compatibilidade ----------
+function contaCompat(sec) {
+  const el = $('.pct', sec); if (!el) return; const alvo = +el.dataset.v, t0 = performance.now();
+  (function f(now) { const k = Math.min(1, (now - t0 - 700) / 1600); el.textContent = (k <= 0 ? 0 : Math.round(alvo * (1 - Math.pow(1 - k, 3)))) + '%'; if (k < 1) requestAnimationFrame(f); })(t0);
 }
 
 // ---------- 12 · ondas ----------
@@ -219,7 +230,9 @@ const cena = (function () {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
-  renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
+  const TM = new URLSearchParams(location.search).get('tm') || 'none';
+  renderer.toneMapping = TM === 'aces' ? THREE.ACESFilmicToneMapping : TM === 'agx' ? THREE.AgXToneMapping : THREE.NoToneMapping;
+  renderer.toneMappingExposure = TM === 'aces' ? 1.05 : 1;
   const scene = new THREE.Scene();
   const pmrem = new THREE.PMREMGenerator(renderer);
   scene.environment = pmrem.fromScene(new RoomEnvironment(), .04).texture;
@@ -235,7 +248,7 @@ const cena = (function () {
   const H = 1.057;                                      // altura do modelo
 
   const loader = new GLTFLoader(); loader.setMeshoptDecoder(MeshoptDecoder);
-  loader.load('models/cida.glb', g => {
+  loader.load('models/cida-hd.glb', g => {
     modelo = g.scene;
     modelo.traverse(o => { if (o.isMesh) { o.material.envMapIntensity = .8; o.castShadow = false; } });
     modelo.position.y = -H / 2;            // centro do modelo na origem
@@ -266,20 +279,21 @@ const cena = (function () {
   ar.addEventListener('pointerup', () => { ax = null; });
   ar.addEventListener('click', () => { if (Math.abs(arrastoV) < .002) cena.pulo(); });
 
-  // rótulos dos detalhes (slide 7)
+  // rótulos dos detalhes: duas colunas fixas, linhas com cotovelo
   const HOTS = [
     ['Cachos com mechas laranja', 'O cabelo é a energia dela', [.17, .95, .08], 1],
     ['Sobrancelha descolorida', 'Atitude e tendência', [.05, .842, .165], 1],
-    ['Piercing no nariz', 'Autêntica do jeito dela', [.032, .738, .18], -1],
-    ['Fone de fio', 'A rádio sempre no ouvido', [.12, .76, .07], 1],
-    ['Suéter listrado', 'Pulso, Frequência e Sol', [-.12, .47, .15], -1],
+    ['Fone de fio', 'A rádio sempre no ouvido', [.125, .76, .07], 1],
     ['Camisa e gravata', 'O toque vintage', [.009, .53, .15], 1],
     ['Bermuda cargo', 'Conforto de quem vive na rua', [.12, .22, .15], 1],
-    ['Vans', 'Clássico que nunca sai de moda', [.1, .05, .18], -1],
+    ['Mão que acena', 'Chega cumprimentando todo mundo', [-.264, .70, .149], -1],
+    ['Suéter listrado', 'Pulso, Frequência e Sol', [-.12, .45, .15], -1],
+    ['Vans', 'Clássico que nunca sai de moda', [-.1, .05, .18], -1],
   ];
-  const hotsEl = $('#hots');
-  hotsEl.innerHTML = HOTS.map(([t, d, , l]) => `<div class="hot ${l < 0 ? 'esq' : ''}"><span class="ponto"></span><span class="fio"></span><span class="rot">${t}<small>${d}</small></span></div>`).join('');
-  const hotEls = $$('.hot', hotsEl);
+  const hotsEl = $('#hots'), hotSvg = $('#hotsvg');
+  hotsEl.innerHTML = HOTS.map(([t, d, , l]) => `<div class="hot ${l < 0 ? 'esq' : ''}"><span class="rot">${t}<small>${d}</small></span></div>`).join('');
+  hotSvg.innerHTML = HOTS.map(() => '<path/><circle r="7"/>').join('');
+  const hotEls = $$('.hot', hotsEl), hotPaths = $$('path', hotSvg), hotDots = $$('circle', hotSvg);
   let hotT0 = 0;
 
   function tamanho() {
@@ -317,19 +331,29 @@ const cena = (function () {
     renderer.render(scene, cam);
     // rótulos
     const mostraHots = alvoNome === 'hots' && vis > .9 && modelo;
-    hotEls.forEach((el, k) => {
-      if (!mostraHots) { el.classList.remove('vis'); return; }
-      const [, , p, lado] = HOTS[k];
-      v3.set(p[0], p[1], p[2]); modelo.localToWorld(v3);
-      v3.project(cam);
-      const x = (v3.x + 1) / 2 * innerWidth, y = (1 - v3.y) / 2 * innerHeight;
-      el.style.transform = `translate(${x}px,${y}px)`;
-      const len = Math.max(60, (lado > 0 ? innerWidth * .78 - x : x - innerWidth * .22));
-      const fio = el.children[1], rot = el.children[2];
-      fio.style.width = len + 'px'; fio.style.left = lado > 0 ? '0' : (-len) + 'px';
-      rot.style.left = lado > 0 ? (len + 8) + 'px' : 'auto'; rot.style.right = lado > 0 ? 'auto' : (len + 8) + 'px';
-      if (performance.now() - hotT0 > 900 + k * 260) el.classList.add('vis');
-    });
+    hotSvg.classList.toggle('vis', !!mostraHots);
+    if (!mostraHots) { hotEls.forEach(el => el.classList.remove('vis')); hotPaths.forEach(p => p.classList.remove('on')); hotDots.forEach(c => c.classList.remove('on')); }
+    else {
+      const W = innerWidth, Hh = innerHeight;
+      const colD = W * .745, colE = W * .255;           // bordas internas das colunas
+      const slotsD = HOTS.filter(h => h[3] > 0).length, slotsE = HOTS.length - slotsD;
+      let iD = 0, iE = 0;
+      hotEls.forEach((el, k) => {
+        const [, , p, lado] = HOTS[k];
+        v3.set(p[0], p[1], p[2]); modelo.localToWorld(v3); v3.project(cam);
+        const x = (v3.x + 1) / 2 * W, y = (1 - v3.y) / 2 * Hh;
+        // posições verticais fixas por coluna (esquerda começa abaixo do título)
+        const sy = lado > 0 ? Hh * (.17 + (iD++) * (.66 / (slotsD - 1))) : Hh * (.47 + (iE++) * (.38 / (slotsE - 1)));
+        const cx = lado > 0 ? colD : colE, ex = cx - lado * 36;
+        el.style.transform = lado > 0 ? `translate(${cx + 10}px,${sy}px)` : `translate(${cx - 10 - el.offsetWidth}px,${sy}px)`;
+        const d = `M${x.toFixed(1)} ${y.toFixed(1)} L${ex.toFixed(1)} ${sy.toFixed(1)} L${cx.toFixed(1)} ${sy.toFixed(1)}`;
+        const path = hotPaths[k]; path.setAttribute('d', d);
+        const len = Math.hypot(ex - x, sy - y) + 36; path.style.setProperty('--len', len.toFixed(0));
+        hotDots[k].setAttribute('cx', x.toFixed(1)); hotDots[k].setAttribute('cy', y.toFixed(1));
+        if (performance.now() - hotT0 > 700 + k * 180) { hotDots[k].classList.add('on'); path.classList.add('on'); }
+        if (performance.now() - hotT0 > 1100 + k * 180) el.classList.add('vis');
+      });
+    }
     requestAnimationFrame(loop);
   }
   requestAnimationFrame(loop);

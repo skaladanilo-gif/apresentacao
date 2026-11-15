@@ -6,7 +6,7 @@
 <title>Rádio Cidade 97.7 · A Cida, nossa brand persona</title>
 <meta name="theme-color" content="#E61973">
 <link rel="preload" href="fonts/LitoStencil.otf" as="font" type="font/otf" crossorigin>
-<link rel="stylesheet" href="deck.css?v=4">
+<link rel="stylesheet" href="deck.css?v=5">
 <script type="importmap">{"imports":{"three":"./vendor/three.module.js","three/addons/":"./vendor/jsm/"}}</script>
 </head>
 <body>
@@ -19,6 +19,7 @@
 <div id="grao" aria-hidden="true"></div>
 <div id="wipe" aria-hidden="true"><i style="background:var(--pulso)"></i><i style="background:var(--sol)"></i><i style="background:var(--freq)"></i></div>
 <div class="barra" id="barra"></div>
+<svg id="hotsvg" aria-hidden="true"></svg>
 <div id="hots" aria-hidden="true"></div>
 
 <header class="topo claro" id="topo">
@@ -39,7 +40,7 @@
 <section class="s claro" id="s1" data-bg="#121316" data-nome="Abertura" data-ui="claro">
   <div class="meio">
     <p class="mini a">Mídias Sociais · Publicidade e Propaganda · UVV · 2026</p>
-    <h1 class="L t" style="margin-top:36px"><span><i>Rádio Cidade</i></span><span><i class="am">97.7 FM</i></span></h1>
+    <h1 class="L t" style="margin-top:72px"><span><i>Rádio Cidade</i></span><span><i class="am">97.7 FM</i></span></h1>
     <div class="linha">
       <p class="lead a">Brand persona, site e identidade visual de uma rádio que, além de tocar, conversa com quem ouve.</p>
       <p class="mini a">Toca aqui, toca na Cidade.</p>
@@ -96,23 +97,6 @@
   </div>
 </section>
 
-<!-- 5 · O SITE -->
-<section class="s" id="s5" data-bg="#F7F4EB" data-nome="O site" data-ui="escuro">
-  <div class="grid">
-    <div>
-      <h2 class="L t"><span><i>Onde ela</i></span><span><i class="rs">mora:</i></span><span><i>o site</i></span></h2>
-      <ul class="feat">
-        <li class="a"><i style="--c:var(--sol);outline:2px solid var(--ink)"></i>Rádio ao vivo em um toque</li>
-        <li class="a"><i style="--c:var(--freq)"></i>Notícias em mosaico</li>
-        <li class="a"><i style="--c:var(--pulso)"></i>Babados do Instagram</li>
-        <li class="a"><i style="--c:var(--coral)"></i>A Cida como IA da rádio</li>
-      </ul>
-      <button class="pilula ink a js-abrir" data-src="../radio-cidade/" type="button">Abrir o site</button>
-    </div>
-    <div class="navegador a esc"><div class="barrinha"><i></i><i></i><i></i><span>radiocidade977.com.br</span></div><div class="tela"><iframe data-src="../radio-cidade/" title="Site da Rádio Cidade" loading="lazy"></iframe></div></div>
-  </div>
-</section>
-
 <!-- 6 · PRAZER, CIDA (3D) -->
 <section class="s claro" id="s6" data-bg="#E61973" data-nome="A personagem" data-ui="claro" data-3d="hero">
   <div class="arrasto" id="arrasto" title="Arraste para girar"></div>
@@ -129,17 +113,34 @@
 
 <!-- 8 · EXPRESSÕES -->
 <section class="s" id="s8" data-bg="#FFD60A" data-nome="Expressões" data-ui="escuro">
-  <div class="topo8">
-    <h2 class="L t"><span><i>Seis humores,</i></span><span><i class="rs">sete bocas.</i></span></h2>
-    <div>
+  <div class="grid8">
+    <div class="col8">
+      <h2 class="L t"><span><i>Seis humores,</i></span><span><i class="rs">sete bocas.</i></span></h2>
       <div class="bocas a">
         <div class="boca-viva" id="bocaViva"></div>
         <div class="tirinha" id="tirinha"></div>
       </div>
-      <p class="mini a" style="opacity:.8">As bocas acompanham a voz dela, sílaba por sílaba.</p>
+      <p class="lead a">As bocas acompanham a voz dela, sílaba por sílaba. Os humores mudam conforme o assunto da conversa.</p>
     </div>
+    <div class="exps" id="exps"></div>
   </div>
-  <div class="exps" id="exps"></div>
+</section>
+
+<!-- 5 · O SITE -->
+<section class="s" id="s5" data-bg="#F7F4EB" data-nome="O site" data-ui="escuro">
+  <div class="grid">
+    <div>
+      <h2 class="L t"><span><i>E ela tem</i></span><span><i class="rs">endereço:</i></span><span><i>o site.</i></span></h2>
+      <ul class="feat">
+        <li class="a"><i style="--c:var(--sol);outline:2px solid var(--ink)"></i>Rádio ao vivo em um toque</li>
+        <li class="a"><i style="--c:var(--freq)"></i>Notícias em mosaico</li>
+        <li class="a"><i style="--c:var(--pulso)"></i>Babados do Instagram</li>
+        <li class="a"><i style="--c:var(--coral)"></i>A Cida como IA da rádio</li>
+      </ul>
+      <button class="pilula ink a js-abrir" data-src="../radio-cidade/" type="button">Abrir o site</button>
+    </div>
+    <div class="navegador a esc"><div class="barrinha"><i></i><i></i><i></i><span>radiocidade977.com.br</span></div><div class="tela"><iframe data-src="../radio-cidade/" title="Site da Rádio Cidade" loading="lazy"></iframe></div></div>
+  </div>
 </section>
 
 <!-- 9 · ELA CONVERSA -->
@@ -160,17 +161,18 @@
   </div>
 </section>
 
-<!-- 10 · BUYER PERSONA: PERFIL -->
-<section class="s claro" id="s10" data-bg="#E61973" data-nome="Buyer persona" data-ui="claro">
+<!-- BUYER PERSONA 1: PERFIL -->
+<section class="s claro persona" data-bg="#E61973" data-nome="Buyer persona · Ju" data-ui="claro" data-persona="ju">
   <div class="grid">
     <div>
-      <p class="mini a">Para quem a Cida fala</p>
+      <p class="mini a">Buyer persona · 1 de 3</p>
       <h2 class="L t" style="margin-top:12px"><span><i>Buyer</i></span><span><i class="am">persona.</i></span></h2>
+      <ol class="trio a" aria-label="Personas"><li class="on">Ju</li><li class="">Léo</li><li class="">Carol</li></ol>
     </div>
-    <div class="app a esc" id="app">
+    <div class="app a esc">
       <div class="cab"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c1 4 6 5 6 11a6 6 0 0 1-12 0c0-3 2-4 2-7 2 1 3 3 3 5 1-2 1-6 1-9z"/></svg>cidade</div>
-      <div class="carta" id="carta">
-        <div class="foto"><div class="listra"></div><div class="mono">J</div><!-- foto da persona: <img src="img/ju.webp" alt="Ju"> --></div>
+      <div class="carta">
+        <div class="foto" style="background:linear-gradient(160deg,#ff9a4a 0%,#E61973 45%,#5b1cc9 100%)"><div class="listra"></div><div class="mono">J</div><!-- foto: <img src="img/persona-ju.webp" alt="Ju"> --></div>
         <div class="pontos"><i></i><i></i><i></i><i></i></div>
         <span class="selo like">Match</span><span class="selo nope">Nope</span>
         <div class="info">
@@ -183,32 +185,26 @@
       <div class="acoes">
         <button class="x" type="button" aria-label="Passar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
         <button class="st" type="button" aria-label="Super like"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 6.6 7.2.8-5.4 4.9 1.6 7.1L12 17.8 5.6 21.4l1.6-7.1L1.8 9.4 9 8.6z"/></svg></button>
-        <button class="lk" type="button" id="like" aria-label="Dar match"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-8-5.3-8-11a4.6 4.6 0 0 1 8-3 4.6 4.6 0 0 1 8 3c0 5.7-8 11-8 11z"/></svg></button>
+        <button class="lk" type="button" aria-label="Dar match"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-8-5.3-8-11a4.6 4.6 0 0 1 8-3 4.6 4.6 0 0 1 8 3c0 5.7-8 11-8 11z"/></svg></button>
       </div>
-      <div class="match" id="match"><div><b>Deu<br>match!</b><span>Ju × Rádio Cidade</span></div></div>
+      <div class="match"><div><b>Deu<br>match!</b><span>Ju × Rádio Cidade</span></div></div>
     </div>
     <div class="dir">
-      <p class="lead a">Quem a Cida quer conquistar: jovem da Grande Vitória, conectada, que vive com fone no ouvido e quer ter assunto com os amigos.</p>
-      <span class="dicaswipe a">Arraste o card ou toque no ♥</span>
+      <p class="lead a">Universitária conectada, que vive com fone no ouvido e quer ter assunto com os amigos.</p>
+      <span class="dicaswipe a">Arraste o card ou toque no coração</span>
     </div>
   </div>
 </section>
 
-<!-- 11 · BUYER PERSONA: CARACTERÍSTICAS -->
-<section class="s claro" id="s11" data-bg="#121316" data-nome="Buyer persona" data-ui="claro" data-entra="sobe">
+<!-- BUYER PERSONA 1: CARACTERÍSTICAS -->
+<section class="s claro ficha-p" data-bg="#121316" data-nome="Buyer persona · Ju" data-ui="claro" data-entra="sobe">
   <div class="cabeca">
-    <div class="av a esc">J<!-- <img src="img/ju.webp" alt=""> --></div>
+    <div class="av a esc" style="background:linear-gradient(160deg,#ff9a4a 0%,#E61973 45%,#5b1cc9 100%)">J</div>
     <h2 class="L t"><span><i>Ju, 21. <span class="am">Sobre ela.</span></i></span></h2>
-    <div class="compat a"><span>Compatibilidade<br>com a Cidade</span><b id="compat">0%</b></div>
+    <div class="compat a"><span>Compatibilidade<br>com a Cidade</span><b class="pct" data-v="97">0%</b></div>
   </div>
   <div class="grid">
-    <ol class="dia">
-      <li class="a esq"><b>07h10</b><span>Fone no ouvido antes de sair. Ônibus até Vitória.</span></li>
-      <li class="a esq"><b>07h40</b><span>TikTok no trânsito, salva o som que viralizou.</span></li>
-      <li class="a esq"><b>12h30</b><span>No almoço do estágio, o assunto é a treta do dia.</span></li>
-      <li class="a esq"><b>18h20</b><span>Carona ou Uber: o rádio está ligado e ela pede pra aumentar.</span></li>
-      <li class="a esq"><b>23h30</b><span>X aberto, fandom em alta, playlist nova no Spotify.</span></li>
-    </ol>
+    <ol class="dia"><li class="a esq"><b>07h10</b><span>Fone no ouvido antes de sair. Ônibus até Vitória.</span></li><li class="a esq"><b>07h40</b><span>TikTok no trânsito, salva o som que viralizou.</span></li><li class="a esq"><b>12h30</b><span>No almoço do estágio, o assunto é a treta do dia.</span></li><li class="a esq"><b>18h20</b><span>Carona ou Uber: o rádio está ligado e ela pede pra aumentar.</span></li><li class="a esq"><b>23h30</b><span>X aberto, fandom em alta, playlist nova no Spotify.</span></li></ol>
     <dl class="cartas">
       <div class="carac a gir" style="background:var(--sol)"><dt>Quer</dt><dd>Saber primeiro e ter assunto com os amigos.</dd></div>
       <div class="carac a gir" style="background:var(--pulso);color:#fff"><dt>Cansou de</dt><dd>Perfil que espalha mentira e rádio com cara de “época da mãe”.</dd></div>
@@ -216,7 +212,115 @@
       <div class="carac a gir" style="background:var(--papel)"><dt>A Cidade pra ela</dt><dd>A trilha do trajeto e o filtro do que importa.</dd></div>
     </dl>
   </div>
-  <p class="nota a">O mídia kit não traz dados de público: a Ju é uma hipótese do grupo, a validar.</p>
+  <p class="nota a">Persona escrita pelo grupo como hipótese: o mídia kit não traz dados de público. A validar com pesquisa.</p>
+</section>
+
+<!-- BUYER PERSONA 2: PERFIL -->
+<section class="s claro persona" data-bg="#2558FF" data-nome="Buyer persona · Léo" data-ui="claro" data-persona="leo">
+  <div class="grid">
+    <div>
+      <p class="mini a">Buyer persona · 2 de 3</p>
+      <h2 class="L t" style="margin-top:12px"><span><i>Buyer</i></span><span><i class="am">persona.</i></span></h2>
+      <ol class="trio a" aria-label="Personas"><li class="">Ju</li><li class="on">Léo</li><li class="">Carol</li></ol>
+    </div>
+    <div class="app a esc">
+      <div class="cab"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c1 4 6 5 6 11a6 6 0 0 1-12 0c0-3 2-4 2-7 2 1 3 3 3 5 1-2 1-6 1-9z"/></svg>cidade</div>
+      <div class="carta">
+        <div class="foto" style="background:linear-gradient(160deg,#FFD60A 0%,#F24444 50%,#2558FF 100%)"><div class="listra"></div><div class="mono">L</div><!-- foto: <img src="img/persona-leo.webp" alt="Léo"> --></div>
+        <div class="pontos"><i></i><i></i><i></i><i></i></div>
+        <span class="selo like">Match</span><span class="selo nope">Nope</span>
+        <div class="info">
+          <h3>Léo <span>27</span><span class="verif"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg></span></h3>
+          <div class="loc"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>Glória, Vila Velha · a 9 km da rádio</div>
+          <p class="bio">Motorista de app de dia, pelada na quinta. O som do carro não desliga.</p>
+          <div class="tags"><span>Pagode</span><span>Funk</span><span>Futebol</span><span>Waze</span></div>
+        </div>
+      </div>
+      <div class="acoes">
+        <button class="x" type="button" aria-label="Passar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+        <button class="st" type="button" aria-label="Super like"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 6.6 7.2.8-5.4 4.9 1.6 7.1L12 17.8 5.6 21.4l1.6-7.1L1.8 9.4 9 8.6z"/></svg></button>
+        <button class="lk" type="button" aria-label="Dar match"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-8-5.3-8-11a4.6 4.6 0 0 1 8-3 4.6 4.6 0 0 1 8 3c0 5.7-8 11-8 11z"/></svg></button>
+      </div>
+      <div class="match"><div><b>Deu<br>match!</b><span>Léo × Rádio Cidade</span></div></div>
+    </div>
+    <div class="dir">
+      <p class="lead a">Motorista de aplicativo que passa o dia no trânsito e usa o rádio como companhia e informação.</p>
+      <span class="dicaswipe a">Arraste o card ou toque no coração</span>
+    </div>
+  </div>
+</section>
+
+<!-- BUYER PERSONA 2: CARACTERÍSTICAS -->
+<section class="s claro ficha-p" data-bg="#121316" data-nome="Buyer persona · Léo" data-ui="claro" data-entra="sobe">
+  <div class="cabeca">
+    <div class="av a esc" style="background:linear-gradient(160deg,#FFD60A 0%,#F24444 50%,#2558FF 100%)">L</div>
+    <h2 class="L t"><span><i>Léo, 27. <span class="am">Sobre ele.</span></i></span></h2>
+    <div class="compat a"><span>Compatibilidade<br>com a Cidade</span><b class="pct" data-v="92">0%</b></div>
+  </div>
+  <div class="grid">
+    <ol class="dia"><li class="a esq"><b>06h30</b><span>Liga o app e o rádio juntos. Primeira corrida pra Vitória.</span></li><li class="a esq"><b>09h00</b><span>Trânsito na Terceira Ponte: quer saber onde está parado.</span></li><li class="a esq"><b>13h00</b><span>Almoço rápido, vê os stories dos amigos e do time.</span></li><li class="a esq"><b>18h00</b><span>Pico de corrida: o passageiro pede pra trocar a música.</span></li><li class="a esq"><b>22h00</b><span>Fecha o dia, vê resumo do jogo e os vídeos de humor.</span></li></ol>
+    <dl class="cartas">
+      <div class="carac a gir" style="background:var(--sol)"><dt>Quer</dt><dd>Companhia no turno, trânsito em tempo real e música que o passageiro também curta.</dd></div>
+      <div class="carac a gir" style="background:var(--pulso);color:#fff"><dt>Cansou de</dt><dd>Locutor que fala demais e intervalo com a mesma propaganda.</dd></div>
+      <div class="carac a gir" style="background:var(--freq);color:#fff"><dt>Ouve</dt><dd>Pagode, funk e sertanejo. Acompanha futebol e humor no Instagram.</dd></div>
+      <div class="carac a gir" style="background:var(--papel)"><dt>A Cidade pra ele</dt><dd>A companhia do turno e o aviso de onde está parado.</dd></div>
+    </dl>
+  </div>
+  <p class="nota a">Persona escrita pelo grupo como hipótese: o mídia kit não traz dados de público. A validar com pesquisa.</p>
+</section>
+
+<!-- BUYER PERSONA 3: PERFIL -->
+<section class="s claro persona" data-bg="#F24444" data-nome="Buyer persona · Carol" data-ui="claro" data-persona="carol">
+  <div class="grid">
+    <div>
+      <p class="mini a">Buyer persona · 3 de 3</p>
+      <h2 class="L t" style="margin-top:12px"><span><i>Buyer</i></span><span><i class="am">persona.</i></span></h2>
+      <ol class="trio a" aria-label="Personas"><li class="">Ju</li><li class="">Léo</li><li class="on">Carol</li></ol>
+    </div>
+    <div class="app a esc">
+      <div class="cab"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c1 4 6 5 6 11a6 6 0 0 1-12 0c0-3 2-4 2-7 2 1 3 3 3 5 1-2 1-6 1-9z"/></svg>cidade</div>
+      <div class="carta">
+        <div class="foto" style="background:linear-gradient(160deg,#F7F4EB 0%,#FFD60A 35%,#E61973 100%)"><div class="listra"></div><div class="mono">C</div><!-- foto: <img src="img/persona-carol.webp" alt="Carol"> --></div>
+        <div class="pontos"><i></i><i></i><i></i><i></i></div>
+        <span class="selo like">Match</span><span class="selo nope">Nope</span>
+        <div class="info">
+          <h3>Carol <span>34</span><span class="verif"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg></span></h3>
+          <div class="loc"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>Campo Grande, Cariacica · a 14 km da rádio</div>
+          <p class="bio">Vendedora no shopping, mãe do Davi, maratona reality no sábado.</p>
+          <div class="tags"><span>Reality</span><span>Sertanejo pop</span><span>Promoção</span><span>WhatsApp</span></div>
+        </div>
+      </div>
+      <div class="acoes">
+        <button class="x" type="button" aria-label="Passar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+        <button class="st" type="button" aria-label="Super like"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 6.6 7.2.8-5.4 4.9 1.6 7.1L12 17.8 5.6 21.4l1.6-7.1L1.8 9.4 9 8.6z"/></svg></button>
+        <button class="lk" type="button" aria-label="Dar match"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-8-5.3-8-11a4.6 4.6 0 0 1 8-3 4.6 4.6 0 0 1 8 3c0 5.7-8 11-8 11z"/></svg></button>
+      </div>
+      <div class="match"><div><b>Deu<br>match!</b><span>Carol × Rádio Cidade</span></div></div>
+    </div>
+    <div class="dir">
+      <p class="lead a">Mãe que trabalha no varejo, ouve rádio no trabalho e no ônibus e quer um respiro leve no dia.</p>
+      <span class="dicaswipe a">Arraste o card ou toque no coração</span>
+    </div>
+  </div>
+</section>
+
+<!-- BUYER PERSONA 3: CARACTERÍSTICAS -->
+<section class="s claro ficha-p" data-bg="#121316" data-nome="Buyer persona · Carol" data-ui="claro" data-entra="sobe">
+  <div class="cabeca">
+    <div class="av a esc" style="background:linear-gradient(160deg,#F7F4EB 0%,#FFD60A 35%,#E61973 100%)">C</div>
+    <h2 class="L t"><span><i>Carol, 34. <span class="am">Sobre ela.</span></i></span></h2>
+    <div class="compat a"><span>Compatibilidade<br>com a Cidade</span><b class="pct" data-v="88">0%</b></div>
+  </div>
+  <div class="grid">
+    <ol class="dia"><li class="a esq"><b>06h00</b><span>Arruma o filho pra escola com o rádio da cozinha ligado.</span></li><li class="a esq"><b>08h30</b><span>Ônibus pro shopping, áudio de WhatsApp com as amigas.</span></li><li class="a esq"><b>12h00</b><span>Rádio ligado na loja: canta junto e comenta o reality.</span></li><li class="a esq"><b>19h00</b><span>Volta pra casa, vê promoções e eventos baratos no fim de semana.</span></li><li class="a esq"><b>22h30</b><span>Instagram antes de dormir: fofoca leve, receita e meme.</span></li></ol>
+    <dl class="cartas">
+      <div class="carac a gir" style="background:var(--sol)"><dt>Quer</dt><dd>Diversão leve, fofoca sem baixaria e programa barato pra fazer com a família.</dd></div>
+      <div class="carac a gir" style="background:var(--pulso);color:#fff"><dt>Cansou de</dt><dd>Notícia pesada o dia inteiro e conteúdo que não fala com ela.</dd></div>
+      <div class="carac a gir" style="background:var(--freq);color:#fff"><dt>Ouve</dt><dd>Sertanejo pop, pagode romântico e as músicas do reality.</dd></div>
+      <div class="carac a gir" style="background:var(--papel)"><dt>A Cidade pra ela</dt><dd>O respiro do dia e o assunto do grupo das amigas.</dd></div>
+    </dl>
+  </div>
+  <p class="nota a">Persona escrita pelo grupo como hipótese: o mídia kit não traz dados de público. A validar com pesquisa.</p>
 </section>
 
 <!-- 12 · SISTEMA VISUAL -->
@@ -318,6 +422,6 @@
 
 <div class="full" id="full"><div class="box"><button class="x" id="fullX" type="button" aria-label="Fechar">×</button><iframe id="fullFrame" title="Conteúdo em tela cheia" allow="autoplay; microphone"></iframe></div></div>
 
-<script type="module" src="deck.js?v=4"></script>
+<script type="module" src="deck.js?v=5"></script>
 </body>
 </html>
