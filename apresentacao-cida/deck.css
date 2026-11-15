@@ -337,12 +337,13 @@ body:not(.primeiro) .dica{opacity:0}
 
 /* 17 · fecho */
 #s17 .grid{flex:1;display:grid;grid-template-columns:1.1fr .9fr;align-items:center}
-.qr{justify-self:end;align-self:end;margin-bottom:20px;background:var(--papel);color:var(--ink);border-radius:28px;padding:22px;width:min(280px,22vw);display:flex;flex-direction:column;gap:6px;box-shadow:0 30px 70px rgba(0,0,0,.3);transform:rotate(3deg);transition:transform .3s var(--pop);position:relative;z-index:3}
+.qrs{justify-self:end;align-self:end;display:flex;gap:14px;margin-bottom:10px;position:relative;z-index:3}
+.qr{background:var(--papel);color:var(--ink);border-radius:24px;padding:18px;width:min(210px,15vw);display:flex;flex-direction:column;gap:5px;box-shadow:0 30px 70px rgba(0,0,0,.3);transform:rotate(var(--rq,3deg));transition:transform .3s var(--pop);position:relative;z-index:3}
 .qr:hover{transform:rotate(0) scale(1.03)}
 .qr img{width:100%;aspect-ratio:1;margin-bottom:10px}
-.qr b{font-family:'Lito';font-weight:400;font-size:clamp(26px,2.2vw,36px);text-transform:uppercase;line-height:.9;color:var(--pulso)}
-.qr span{font-weight:600;font-size:13.5px;line-height:1.4}
-#s17 h2{font-size:clamp(120px,17vw,300px);color:var(--papel)}
+.qr b{font-family:'Lito';font-weight:400;font-size:clamp(20px,1.7vw,28px);text-transform:uppercase;line-height:.9;color:var(--pulso)}
+.qr span{font-weight:600;font-size:12.5px;line-height:1.35}
+#s17 h2{font-size:clamp(100px,13vw,240px);color:var(--papel)}
 #s17 .lead{color:var(--papel);margin:26px 0 30px}
 #s17 .creditos{font-size:12.5px;font-weight:600;color:var(--papel);opacity:.75;margin-top:30px;max-width:44em;line-height:1.5}
 
@@ -360,7 +361,7 @@ body:not(.primeiro) .dica{opacity:0}
   .base{padding:14px 22px}
   .ficha-p .cabeca{flex-wrap:wrap}.ficha-p .compat{margin-left:0}
   #s1 .dial{bottom:80px}
-  .qr{width:min(260px,70vw);justify-self:start;transform:none}
+  .qrs{justify-self:start}.qr{width:min(200px,42vw);transform:none}
   .topo .sec{display:none}
   #s2 .grid,#s4 .grid,#s5 .grid,#s9 .grid,.persona .grid,.ficha-p .grid,#s12 .grid,#s14 .grid,#s17 .grid{grid-template-columns:1fr}
   #s3 .tres,#s3 .def,.eds,.rua,.cores{grid-template-columns:1fr 1fr}

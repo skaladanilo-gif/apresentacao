@@ -264,7 +264,7 @@ const cena = (function () {
   const ESTADOS = {
     hero: { x: 0, y: -.02, s: 1, ry: 0, vis: 1 },
     hots: { x: .02, y: -.02, s: 1.02, ry: 0, vis: 1 },
-    fecho: { x: .12, y: -.04, s: .88, ry: -.2, vis: 1 },
+    fecho: { x: .005, y: -.04, s: .86, ry: -.2, vis: 1 },
   };
   let alvoNome = null, vis = 0, entra = 0;
   const atualE = { x: 0, y: -1.2, s: 1, ry: 0 };
