@@ -46,7 +46,7 @@ body.desktop .ra{display:none}
 
 <header><img src="logo.webp" alt="Rádio Cidade 97.7 FM"><span>Realidade aumentada</span></header>
 
-<model-viewer id="mv" src="cida-ra.glb" alt="Cida, personagem 3D da Rádio Cidade, acenando"
+<model-viewer id="mv" src="cida-ra-anim.glb" animation-name="tchau" autoplay alt="Cida, personagem 3D da Rádio Cidade, acenando"
   ar ar-modes="webxr scene-viewer quick-look" ar-placement="floor" ar-scale="auto"
   camera-controls touch-action="pan-y"
   camera-orbit="0deg 84deg 100%" field-of-view="28deg" min-camera-orbit="auto 40deg auto" max-camera-orbit="auto 100deg auto"
@@ -66,13 +66,15 @@ body.desktop .ra{display:none}
 const mv = document.getElementById('mv'), btn = document.getElementById('btnRA'), dica = document.getElementById('dica');
 const celular = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 if (!celular) document.body.classList.add('desktop');
+// iPhone: a RA do sistema não toca a animação do esqueleto; usa a Cida já na pose de tchau
+if (/iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) { mv.removeAttribute('autoplay'); mv.src = 'cida-ra-pose.glb'; }
 // painel embaixo define onde a Cida termina
 const painel = document.querySelector('.painel');
 const mede = () => document.documentElement.style.setProperty('--painel', (painel.offsetHeight + 10) + 'px');
 addEventListener('resize', mede); mede(); document.fonts.ready.then(mede);
 // balanço suave até a pessoa mexer
 let mexeu = false; mv.addEventListener('camera-change', e => { if (e.detail.source === 'user-interaction') mexeu = true; });
-(function balanca(t) { if (!mexeu) mv.cameraOrbit = `${Math.sin(t / 1600) * 28}deg 84deg 100%`; requestAnimationFrame(balanca); })(0);
+(function balanca(t) { if (!mexeu) mv.cameraOrbit = `${Math.sin(t / 1600) * 22}deg 84deg 100%`; requestAnimationFrame(balanca); })(0);
 btn.addEventListener('click', () => {
   if (mv.canActivateAR) mv.activateAR();
   else dica.textContent = 'Seu celular não abriu a câmera de RA. No Android, atualize o Google Play Services para RA; no iPhone, abra no Safari.';

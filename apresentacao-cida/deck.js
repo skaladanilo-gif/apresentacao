@@ -248,11 +248,29 @@ const cena = (function () {
   const H = 1.057;                                      // altura do modelo
 
   const loader = new GLTFLoader(); loader.setMeshoptDecoder(MeshoptDecoder);
-  loader.load('models/cida-hd.glb', g => {
+  // animações: parada (padrão), tchau, danca, danca2, comemora, andar
+  let mixer = null, atualAcao = null, maoR = null; const acoes = {};
+  function tocarAnim(nome, fade = .35) {
+    const a = acoes[nome]; if (!a || a === atualAcao) return;
+    a.reset(); a.enabled = true; a.setEffectiveWeight(1); a.play();
+    if (atualAcao) atualAcao.crossFadeTo(a, fade, false);
+    atualAcao = a;
+  }
+  const emLoop = () => (tocando && alvoNome && alvoNome !== 'hots' ? (Math.random() < .5 ? 'danca' : 'danca2') : 'parada');
+  loader.load('models/cida-anim.glb', g => {
     modelo = g.scene;
-    modelo.traverse(o => { if (o.isMesh) { o.material.envMapIntensity = .8; o.castShadow = false; } });
+    modelo.traverse(o => {
+      if (o.isMesh) { o.frustumCulled = false; o.material.envMapIntensity = .55; o.material.emissiveMap = o.material.map; o.material.emissive = new THREE.Color(0xffffff); o.material.emissiveIntensity = .38; o.material.color.setScalar(.8); }
+      if (o.name === 'handR') maoR = o;
+    });
     modelo.position.y = -H / 2;            // centro do modelo na origem
     corpo.add(modelo);
+    mixer = new THREE.AnimationMixer(modelo);
+    g.animations.forEach(c => { const a = mixer.clipAction(c); acoes[c.name] = a; if (['tchau', 'comemora'].includes(c.name)) { a.setLoop(THREE.LoopOnce, 1); a.clampWhenFinished = true; } });
+    mixer.addEventListener('finished', () => tocarAnim(emLoop(), .4));
+    let voltas = 0;
+    mixer.addEventListener('loop', e => { if (e.action === atualAcao && (e.action === acoes.danca || e.action === acoes.danca2) && ++voltas % 2 === 0) tocarAnim(e.action === acoes.danca ? 'danca2' : 'danca', .5); });
+    tocarAnim('parada', 0);
   });
 
   // sombra suave no chão
@@ -281,14 +299,14 @@ const cena = (function () {
 
   // rótulos dos detalhes: duas colunas fixas, linhas com cotovelo
   const HOTS = [
-    ['Cachos com mechas laranja', 'O cabelo é a energia dela', [.17, .95, .08], 1],
-    ['Sobrancelha descolorida', 'Atitude e tendência', [.05, .842, .165], 1],
-    ['Fone de fio', 'A rádio sempre no ouvido', [.125, .76, .07], 1],
-    ['Camisa e gravata', 'O toque vintage', [.009, .53, .15], 1],
-    ['Bermuda cargo', 'Conforto de quem vive na rua', [.12, .22, .15], 1],
-    ['Mão que acena', 'Chega cumprimentando todo mundo', [-.264, .70, .149], -1],
-    ['Suéter listrado', 'Pulso, Frequência e Sol', [-.12, .45, .15], -1],
-    ['Vans', 'Clássico que nunca sai de moda', [-.1, .05, .18], -1],
+    ['Cachos com mechas laranja', 'O cabelo é a energia dela', [.067, .952, .152], 1],
+    ['Sobrancelha descolorida', 'Atitude e tendência', [.058, .869, .153], 1],
+    ['Fone de fio', 'A rádio sempre no ouvido', [.106, .801, .103], 1],
+    ['Camisa e gravata', 'O toque vintage', [.003, .573, .141], 1],
+    ['Bermuda cargo', 'Conforto de quem vive na rua', [.115, .318, .132], 1],
+    ['Unhas coloridas', 'Detalhe de quem se cuida', 'mao', -1],
+    ['Suéter listrado', 'Pulso, Frequência e Sol', [-.075, .503, .128], -1],
+    ['Vans', 'Clássico que nunca sai de moda', [-.105, .042, .208], -1],
   ];
   const hotsEl = $('#hots'), hotSvg = $('#hotsvg');
   hotsEl.innerHTML = HOTS.map(([t, d, , l]) => `<div class="hot ${l < 0 ? 'esq' : ''}"><span class="rot">${t}<small>${d}</small></span></div>`).join('');
@@ -319,11 +337,12 @@ const cena = (function () {
     // entrada com giro
     entra += (1 - entra) * L(1.5); giroExtra *= Math.exp(-dt * 3.6);
     arrastoRy += arrastoV; arrastoV *= Math.exp(-dt * 5); if (alvoNome !== 'hero') arrastoRy *= Math.exp(-dt * 3);
-    const dancando = tocando && alvoNome;
+    const dancando = tocando && alvoNome && alvoNome !== 'hots';
     let ry = atualE.ry + arrastoRy + (1 - entra) * Math.PI * 2.2 + giroExtra + mouse.x * .25;
-    let by = Math.sin(t * 1.6) * .008, rz = 0;
+    let by = 0, rz = 0;
     if (alvoNome === 'hots') ry = Math.sin(t * .5) * .32 + mouse.x * .15;
-    if (dancando && !REDUZ) { const b = t * Math.PI * 2 * (118 / 60); by += Math.abs(Math.sin(b / 2)) * .035; rz = Math.sin(b / 2) * .06; ry += Math.sin(b / 4) * .35; }
+    if (mixer) mixer.update(REDUZ ? 0 : dt);
+    if (mixer && atualAcao && (atualAcao === acoes.parada) === !!dancando && atualAcao !== acoes.tchau && atualAcao !== acoes.comemora) tocarAnim(emLoop(), .5);
     pulo *= Math.exp(-dt * 6); by += Math.sin((1 - pulo) * Math.PI) * pulo * .09;
     corpo.rotation.set(-mouse.y * .05, ry, rz); corpo.position.y = by;
     sombra.scale.setScalar(1 - by * 3);
@@ -340,7 +359,8 @@ const cena = (function () {
       let iD = 0, iE = 0;
       hotEls.forEach((el, k) => {
         const [, , p, lado] = HOTS[k];
-        v3.set(p[0], p[1], p[2]); modelo.localToWorld(v3); v3.project(cam);
+        if (p === 'mao') { if (maoR) { maoR.getWorldPosition(v3); v3.y -= .05; } } else { v3.set(p[0], p[1], p[2]); modelo.localToWorld(v3); }
+        v3.project(cam);
         const x = (v3.x + 1) / 2 * W, y = (1 - v3.y) / 2 * Hh;
         // posições verticais fixas por coluna (esquerda começa abaixo do título)
         const sy = lado > 0 ? Hh * (.17 + (iD++) * (.66 / (slotsD - 1))) : Hh * (.47 + (iE++) * (.38 / (slotsE - 1)));
@@ -360,12 +380,13 @@ const cena = (function () {
 
   return {
     alvo(nome, primeira) {
-      if (nome && !alvoNome && primeira) { entra = 0; }
+      if (nome && !alvoNome && primeira) { entra = 0; setTimeout(() => { if (alvoNome === 'hero') tocarAnim('tchau', .3); }, 1700); }
       alvoNome = nome && ESTADOS[nome] ? nome : null;
       if (alvoNome === 'hots') hotT0 = performance.now();
       if (alvoNome && atualE.y < -1) { Object.assign(atualE, { ...ESTADOS[alvoNome] }); }
     },
-    pulo() { pulo = 1; giroExtra += Math.PI * 2; },
+    pulo() { tocarAnim(atualAcao === acoes.tchau || (tocando && atualAcao !== acoes.parada) ? 'comemora' : 'tchau', .25); },
+    acenar() { tocarAnim('tchau', .3); },
   };
 })();
 
