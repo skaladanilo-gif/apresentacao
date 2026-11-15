@@ -131,13 +131,16 @@ const stage=document.getElementById('stage'),statusEl=document.getElementById('s
 function setStatus(t,cls){statusEl.textContent=t;stage.classList.remove('talking','listening');if(cls)stage.classList.add(cls)}
 
 // fala: anima a boca sincronizada com o texto (e com a voz, quando ligada)
+let talkId=0;
 function speak(text,bubble,allowVoice=true){
+  const my=++talkId;
   return new Promise(res=>{
     const useVoice=allowVoice&&document.getElementById('voz').checked&&'speechSynthesis' in window&&voice;
     const cps=useVoice?14.5:17; let base=0,baseT=performance.now(),done=false,last=-1;
     setStatus('falando…','talking');
     function frame(now){
       if(done)return;
+      if(my!==talkId){done=true;bubble.textContent=text;res();return}
       let idx=Math.floor(base+(now-baseT)/1000*cps);
       if(idx>=text.length){idx=text.length; if(!useVoice){finish();return}}
       if(idx!==last){bubble.textContent=text.slice(0,Math.max(idx,1));last=idx;scrollDown()}
@@ -158,31 +161,50 @@ function speak(text,bubble,allowVoice=true){
 }
 
 // ===== Voz do Gemini (áudio de verdade) =====
-let actx=null;
+// Um único player, liberado no clique do usuário (Safari e Chrome bloqueiam som que começa depois de esperar a internet).
+const player=new Audio();player.preload='auto';
+const SILENT='data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
+let unlocked=false;
+function unlockAudio(){
+  if(unlocked)return;unlocked=true;
+  try{player.src=SILENT;const p=player.play();if(p)p.catch(()=>{unlocked=false})}catch(e){unlocked=false}
+  if('speechSynthesis' in window){try{speechSynthesis.speak(new SpeechSynthesisUtterance(''))}catch(e){}}
+}
+// lê o WAV e calcula o volume a cada 10 ms (para a boca seguir o áudio)
+function envelope(u8){
+  try{const dv=new DataView(u8.buffer);let p=12,rate=24000,bits=16,ch=1,start=-1,len=0;
+    while(p+8<=u8.length){const id=String.fromCharCode(u8[p],u8[p+1],u8[p+2],u8[p+3]),sz=dv.getUint32(p+4,true);
+      if(id==='fmt '){ch=dv.getUint16(p+10,true);rate=dv.getUint32(p+12,true);bits=dv.getUint16(p+22,true)}
+      if(id==='data'){start=p+8;len=Math.min(sz,u8.length-start);break}p+=8+sz+(sz&1)}
+    if(start<0||bits!==16)return null;
+    const n=Math.floor(len/2/ch),hop=Math.round(rate/100),env=new Float32Array(Math.ceil(n/hop));
+    for(let f=0;f<env.length;f++){let s=0,c=0;for(let i=f*hop;i<Math.min(n,(f+1)*hop);i++){const v=dv.getInt16(start+i*2*ch,true)/32768;s+=v*v;c++}env[f]=c?Math.sqrt(s/c):0}
+    return env}catch(e){return null}
+}
 async function fetchVoice(text,mood){
   try{const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({acao:'voz',text,mood})});
     if(!r.ok)return null;const j=await r.json();if(!j.audio)return null;
     const bin=atob(j.audio),u8=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u8[i]=bin.charCodeAt(i);
-    return URL.createObjectURL(new Blob([u8],{type:j.mime||'audio/wav'}));}catch(e){return null}
+    return {url:URL.createObjectURL(new Blob([u8],{type:j.mime||'audio/wav'})),env:envelope(u8)};}catch(e){return null}
 }
-function speakAudio(text,bubble,url){
+function speakAudio(text,bubble,v){
+  ++talkId;
   return new Promise(res=>{
-    const audio=new Audio(url);let an=null,buf=null,done=false;
-    try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();actx.resume();
-      const src=actx.createMediaElementSource(audio);an=actx.createAnalyser();an.fftSize=1024;src.connect(an);an.connect(actx.destination);buf=new Float32Array(an.fftSize)}catch(e){an=null}
-    setStatus('falando…','talking');let last=-1;
+    let done=false,last=-1;setStatus('falando…','talking');
     function frame(){
       if(done)return;
-      const d=audio.duration||0,p=d?Math.min(audio.currentTime/d,1):0,idx=Math.floor(p*text.length);
+      const d=player.duration||0,t=player.currentTime,p=d?Math.min(t/d,1):0,idx=Math.floor(p*text.length);
       if(idx!==last){bubble.textContent=text.slice(0,Math.max(idx,1));last=idx;scrollDown()}
-      let amp=1;if(an){an.getFloatTimeDomainData(buf);let s=0;for(const v of buf)s+=v*v;amp=Math.sqrt(s/buf.length)}
+      const amp=v.env?(v.env[Math.floor(t*100)]||0):0.05;
       let m=idx<text.length?viseme(text[idx]):'repouso';
-      if(amp<0.015)m='repouso';else if(m==='repouso')m=amp>0.08?'a':'e';
+      if(amp<0.012)m='repouso';else if(m==='repouso')m=amp>0.08?'a':'e';
       mouth(m);requestAnimationFrame(frame);
     }
-    function finish(){if(done)return;done=true;bubble.textContent=text;mouth('repouso');setStatus('online agora');URL.revokeObjectURL(url);res()}
-    audio.onended=finish;audio.onerror=finish;
-    audio.play().then(()=>requestAnimationFrame(frame)).catch(()=>{done=true;URL.revokeObjectURL(url);speak(text,bubble,false).then(res)});
+    function finish(){if(done)return;done=true;player.onended=player.onerror=null;bubble.textContent=text;mouth('repouso');setStatus('online agora');URL.revokeObjectURL(v.url);res()}
+    player.onended=finish;player.onerror=finish;
+    player.src=v.url;
+    player.play().then(()=>requestAnimationFrame(frame)).catch(()=>{done=true;URL.revokeObjectURL(v.url);
+      toast('Toque na tela para liberar o som da Cida.');speak(text,bubble,true).then(res)});
   });
 }
 
@@ -223,14 +245,14 @@ async function answer(q){
 }
 let busy=false;
 async function send(q){
-  q=(q||'').trim();if(!q||busy)return;busy=true;
+  q=(q||'').trim();if(!q||busy)return;busy=true;unlockAudio();
   addMe(q);hist.push({role:'user',content:q});
   setStatus('digitando…');
   const a=await answer(q);hist.push({role:'assistant',content:a.text});
   const wantVoice=document.getElementById('voz').checked;
-  const url=(wantVoice&&a.ai)?await fetchVoice(a.text,a.mood):null;
+  const v=(wantVoice&&a.ai)?await fetchVoice(a.text,a.mood):null;
   showMood(a.mood);const b=addCida(a.mood);
-  if(url)await speakAudio(a.text,b,url); else await speak(a.text,b);
+  if(v)await speakAudio(a.text,b,v); else await speak(a.text,b);
   busy=false;
 }
 document.getElementById('form').addEventListener('submit',e=>{e.preventDefault();const i=document.getElementById('inp');const v=i.value;i.value='';send(v)});
@@ -242,6 +264,7 @@ const note=document.getElementById('note');function toast(t){note.textContent=t;
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;const micBtn=document.getElementById('mic');let rec=null,listening=false;
 micBtn.onclick=()=>{
   if(!SR){toast('Seu navegador não reconhece voz. Use o Chrome ou digite a mensagem.');return}
+  unlockAudio();
   if(listening){rec.stop();return}
   if('speechSynthesis' in window)speechSynthesis.cancel();
   rec=new SR();rec.lang='pt-BR';rec.interimResults=true;rec.maxAlternatives=1;
@@ -253,7 +276,7 @@ micBtn.onclick=()=>{
   rec.start();
 };
 
-document.addEventListener('pointerdown',()=>{try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();actx.resume()}catch(e){}},{once:true});
+document.addEventListener('pointerdown',unlockAudio,{once:true});
 // ===== Boas-vindas =====
 setTimeout(()=>{showMood('feliz');const b=addCida('feliz');speakWelcome(b)},600);
 function speakWelcome(b){
