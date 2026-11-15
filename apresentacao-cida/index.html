@@ -6,7 +6,7 @@
 <title>Rádio Cidade 97.7 · A Cida, nossa brand persona</title>
 <meta name="theme-color" content="#E61973">
 <link rel="preload" href="fonts/LitoStencil.otf" as="font" type="font/otf" crossorigin>
-<link rel="stylesheet" href="deck.css?v=5">
+<link rel="stylesheet" href="deck.css?v=6">
 <script type="importmap">{"imports":{"three":"./vendor/three.module.js","three/addons/":"./vendor/jsm/"}}</script>
 </head>
 <body>
@@ -72,6 +72,28 @@
     <div class="bloco a gir" style="background:var(--papel);color:var(--ink)"><h3>Voz</h3><p>Fala como amiga, nunca como locutora formal. Coloquial, animada e direta.</p></div>
     <div class="bloco a gir" style="background:var(--sol);color:var(--ink);--r0:10deg"><h3>Critério</h3><p>Conta primeiro, mas confere antes. Fofoca, sim. Fake, nunca.</p></div>
     <div class="bloco a gir" style="background:var(--pulso);color:#fff"><h3>Presença</h3><p>A mesma personalidade no Instagram, no site, no evento e na conversa com a IA.</p></div>
+  </div>
+</section>
+
+<!-- 12 · SISTEMA VISUAL -->
+<section class="s" id="s12" data-bg="#F7F4EB" data-nome="Sistema visual" data-ui="escuro">
+  <div class="grid">
+    <h2 class="L t"><span><i>Um sistema</i></span><span><i class="az">pra todo mundo.</i></span></h2>
+    <div class="tipo a">
+      <div><div class="aa">Aa</div><small>Lito Stencil · títulos</small></div>
+      <div><div class="aa2">Aa</div><small>Montserrat · textos</small></div>
+    </div>
+    <div class="cores">
+      <div class="cor" style="background:var(--pulso);--i:0"><b>Pulso</b><small>#E61973</small></div>
+      <div class="cor" style="background:var(--freq);--i:1"><b>Frequência</b><small>#2558FF</small></div>
+      <div class="cor" style="background:var(--sol);color:var(--ink);--i:2"><b>Sol</b><small>#FFD60A</small></div>
+      <div class="cor" style="background:var(--coral);--i:3"><b>Coral</b><small>#F24444</small></div>
+    </div>
+    <div class="padroes">
+      <div class="padrao a" style="background:var(--freq)"><svg viewBox="0 0 200 200" preserveAspectRatio="xMidYMid slice" id="ondasSvg"></svg><b>Ondas</b></div>
+      <div class="padrao listras a"><b>Listras</b></div>
+      <div class="padrao moldura a"><b>Moldura</b></div>
+    </div>
   </div>
 </section>
 
@@ -323,28 +345,6 @@
   <p class="nota a">Persona escrita pelo grupo como hipótese: o mídia kit não traz dados de público. A validar com pesquisa.</p>
 </section>
 
-<!-- 12 · SISTEMA VISUAL -->
-<section class="s" id="s12" data-bg="#F7F4EB" data-nome="Sistema visual" data-ui="escuro">
-  <div class="grid">
-    <h2 class="L t"><span><i>Um sistema</i></span><span><i class="az">pra todo mundo.</i></span></h2>
-    <div class="tipo a">
-      <div><div class="aa">Aa</div><small>Lito Stencil · títulos</small></div>
-      <div><div class="aa2">Aa</div><small>Montserrat · textos</small></div>
-    </div>
-    <div class="cores">
-      <div class="cor" style="background:var(--pulso);--i:0"><b>Pulso</b><small>#E61973</small></div>
-      <div class="cor" style="background:var(--freq);--i:1"><b>Frequência</b><small>#2558FF</small></div>
-      <div class="cor" style="background:var(--sol);color:var(--ink);--i:2"><b>Sol</b><small>#FFD60A</small></div>
-      <div class="cor" style="background:var(--coral);--i:3"><b>Coral</b><small>#F24444</small></div>
-    </div>
-    <div class="padroes">
-      <div class="padrao a" style="background:var(--freq)"><svg viewBox="0 0 200 200" preserveAspectRatio="xMidYMid slice" id="ondasSvg"></svg><b>Ondas</b></div>
-      <div class="padrao listras a"><b>Listras</b></div>
-      <div class="padrao moldura a"><b>Moldura</b></div>
-    </div>
-  </div>
-</section>
-
 <!-- 13 · EDITORIAS -->
 <section class="s claro" id="s13" data-bg="#121316" data-nome="Editorias" data-ui="claro">
   <h2 class="L t"><span><i>Três editorias,</i></span><span><i class="am">nove conteúdos.</i></span></h2>
@@ -414,7 +414,11 @@
       <button class="pilula toca js-toca a esc" type="button"><span class="toca-txt-off">Toca aqui ✋</span><span class="toca-txt-on">Tocando ao vivo</span></button>
       <p class="creditos a">Rádio Cidade 97.7 FM · projeto acadêmico de Publicidade e Propaganda, UVV, 2026. A Cida é uma personagem 3D criada com IA; persona, pautas e datas são propostas do grupo.</p>
     </div>
-    <div></div>
+    <a class="qr a esc" href="../cida/" target="_blank" rel="noopener">
+      <img src="img/qr-cida.svg" alt="QR code para conversar com a Cida">
+      <b>Fala com a Cida</b>
+      <span>Aponte a câmera do celular e mande uma pergunta pra ela.</span>
+    </a>
   </div>
 </section>
 
@@ -422,6 +426,6 @@
 
 <div class="full" id="full"><div class="box"><button class="x" id="fullX" type="button" aria-label="Fechar">×</button><iframe id="fullFrame" title="Conteúdo em tela cheia" allow="autoplay; microphone"></iframe></div></div>
 
-<script type="module" src="deck.js?v=5"></script>
+<script type="module" src="deck.js?v=6"></script>
 </body>
 </html>
