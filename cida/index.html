@@ -60,6 +60,7 @@ form input{flex:1;font:600 16px 'Montserrat',sans-serif;padding:14px 16px;border
 .mic.on{background:var(--coral);color:#fff;animation:pulse 1s infinite}
 .opts{display:flex;justify-content:space-between;align-items:center;padding:0 20px 14px;font-size:12px;font-weight:700;color:#5b5c62}
 .opts label{display:flex;gap:6px;align-items:center;cursor:pointer}
+.opts select{font:700 12px 'Montserrat',sans-serif;border:2px solid var(--asf);border-radius:8px;padding:3px 6px;background:#fff}
 .note{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--asf);color:var(--papel);font-size:13px;font-weight:600;padding:10px 16px;border-radius:12px;opacity:0;transition:opacity .3s;pointer-events:none;max-width:90vw;text-align:center}
 .note.show{opacity:1}
 @media (max-width:700px){
@@ -90,7 +91,7 @@ form input{flex:1;font:600 16px 'Montserrat',sans-serif;padding:14px 16px;border
       <button type="button" class="btn mic" id="mic" title="Falar com a Cida" aria-label="Falar com a Cida">🎙️</button>
       <button type="submit" class="btn send" title="Enviar" aria-label="Enviar">➤</button>
     </form>
-    <div class="opts"><label><input type="checkbox" id="voz" checked> Voz da Cida ligada</label><span id="modo">modo demonstração</span></div>
+    <div class="opts"><label><input type="checkbox" id="voz" checked> Voz</label><label>Voz de <select id="prov"><option value="gemini">Gemini (Leda)</option><option value="eleven">ElevenLabs</option></select></label><span id="modo">modo demonstração</span></div>
   </section>
 </div>
 <div class="note" id="note"></div>
@@ -167,6 +168,8 @@ function speak(text,bubble,allowVoice=true){
 const player=new Audio();player.preload='auto';
 const SILENT='data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
 let unlocked=false;
+const prov=document.getElementById('prov');try{const v=localStorage.getItem('cida-voz');if(v)prov.value=v}catch(e){}
+prov.onchange=()=>{try{localStorage.setItem('cida-voz',prov.value)}catch(e){}};
 function unlockAudio(){
   if(unlocked)return;unlocked=true;
   try{player.src=SILENT;const p=player.play();if(p)p.catch(()=>{unlocked=false})}catch(e){unlocked=false}
@@ -202,8 +205,9 @@ function mouthTrack(u8){
     return track}catch(e){return null}
 }
 async function fetchVoice(text,mood){
-  try{const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({acao:'voz',text,mood})});
+  try{const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({acao:'voz',text,mood,provider:prov.value})});
     if(!r.ok)return null;const j=await r.json();if(!j.audio)return null;
+    if(prov.value==='eleven'&&!(j.model||'').startsWith('elevenlabs'))toast('ElevenLabs indisponível agora, usei a voz do Gemini.');
     const bin=atob(j.audio),u8=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u8[i]=bin.charCodeAt(i);
     return {url:URL.createObjectURL(new Blob([u8],{type:j.mime||'audio/wav'})),track:mouthTrack(u8)};}catch(e){return null}
 }
