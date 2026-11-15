@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { createCorpo, relaxArms } from './vendor/corpo.js';
 
 const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
@@ -245,38 +246,88 @@ const cena = (function () {
   const raiz = new THREE.Group(); scene.add(raiz);      // posição/escala por slide
   const corpo = new THREE.Group(); raiz.add(corpo);     // dança, giro, pulo
   let modelo = null;
-  const H = 1.057;                                      // altura do modelo
+  const H = 1.70;                                       // altura do modelo (o motor corpo.js trabalha em metros)
+  const centro = new THREE.Group(); centro.position.y = -H / 2; corpo.add(centro);
+  const raizC = new THREE.Group(); centro.add(raizC);   // o motor anda com esta raiz
 
-  const loader = new GLTFLoader(); loader.setMeshoptDecoder(MeshoptDecoder);
-  // animações: parada (padrão), tchau, danca, danca2, comemora, andar
-  let mixer = null, atualAcao = null, maoR = null; const acoes = {};
-  function tocarAnim(nome, fade = .35) {
-    const a = acoes[nome]; if (!a || a === atualAcao) return;
-    a.reset(); a.enabled = true; a.setEffectiveWeight(1); a.play();
-    if (atualAcao) atualAcao.crossFadeTo(a, fade, false);
-    atualAcao = a;
+  // mini linha do tempo para os controles do motor (no lugar do GSAP do projeto original)
+  const suav = u => u * u * (3 - 2 * u), lin = u => u;
+  let tl = [];
+  const agora = () => performance.now() / 1000;
+  function tw(obj, k, to, dur, delay = 0, ease = suav) { tl.push({ obj, k, to, dur: Math.max(dur, .001), t0: agora() + delay, from: null, ease }); }
+  function limpa(keys) { tl = tl.filter(a => !keys.includes(a.k)); }
+  function tick() {
+    const n = agora();
+    for (let i = tl.length - 1; i >= 0; i--) {
+      const a = tl[i]; if (n < a.t0) continue;
+      if (a.from === null) a.from = a.obj[a.k];
+      const u = Math.min(1, (n - a.t0) / a.dur); a.obj[a.k] = a.from + (a.to - a.from) * a.ease(u);
+      if (u >= 1) tl.splice(i, 1);
+    }
   }
-  const emLoop = () => (tocando && alvoNome && alvoNome !== 'hots' ? (Math.random() < .5 ? 'danca' : 'danca2') : 'parada');
+
+  let motor = null, mixer = null, maoR = null, danca = null, dancaW = 0, esperaDanca = 0, voltas = 0, chegarPendente = false;
+  const ossos = [], acoes = {}, salvo = new Map();
+  const loader = new GLTFLoader(); loader.setMeshoptDecoder(MeshoptDecoder);
   loader.load('models/cida-anim.glb', g => {
     modelo = g.scene;
     modelo.traverse(o => {
       if (o.isMesh) { o.frustumCulled = false; o.material.envMapIntensity = .55; o.material.emissiveMap = o.material.map; o.material.emissive = new THREE.Color(0xffffff); o.material.emissiveIntensity = .38; o.material.color.setScalar(.8); }
-      if (o.name === 'handR') maoR = o;
+      if (o.isBone) ossos.push(o);
+      if (o.name === 'RightHand') maoR = o;
     });
-    modelo.position.y = -H / 2;            // centro do modelo na origem
-    corpo.add(modelo);
+    raizC.add(modelo); modelo.updateMatrixWorld(true);
+    relaxArms(ossos);
+    motor = createCorpo({ raiz: raizC, bones: ossos });
+    if (motor) Object.assign(motor.pose, { fixo: 0, atencao: 1, peso: 1 });
     mixer = new THREE.AnimationMixer(modelo);
-    g.animations.forEach(c => { const a = mixer.clipAction(c); acoes[c.name] = a; if (['tchau', 'comemora'].includes(c.name)) { a.setLoop(THREE.LoopOnce, 1); a.clampWhenFinished = true; } });
-    mixer.addEventListener('finished', () => tocarAnim(emLoop(), .4));
-    let voltas = 0;
-    mixer.addEventListener('loop', e => { if (e.action === atualAcao && (e.action === acoes.danca || e.action === acoes.danca2) && ++voltas % 2 === 0) tocarAnim(e.action === acoes.danca ? 'danca2' : 'danca', .5); });
-    tocarAnim('parada', 0);
+    g.animations.forEach(c => { if (c.name.startsWith('danca')) acoes[c.name] = mixer.clipAction(c); });
+    mixer.addEventListener('loop', e => {
+      if (e.action !== danca || ++voltas % 2) return;
+      const outra = acoes[danca === acoes.danca ? 'danca2' : 'danca']; outra.reset().play(); danca.crossFadeTo(outra, .5, false); danca = outra;
+    });
+    if (chegarPendente) chegar();
   });
+
+  // a chegada (motion/chegada.js): entra pela direita andando, nota a câmera, para de frente e acena
+  function chegar() {
+    if (!motor) { chegarPendente = true; return; }
+    chegarPendente = false;
+    const p = motor.pose, z = -1.2, dist = cam.position.z;
+    const visW = 2 * Math.tan(cam.fov * Math.PI / 360) * dist * cam.aspect;
+    const meia = (visW / 2) * (dist - z) / dist;
+    const plano = motor.entrar({ x: meia + .45, z });
+    limpa(['tempo', 'atencao', 'aceno', 'balanco', 'peso', 'fixo']);
+    Object.assign(p, { tempo: 0, atencao: 0, aceno: 0, balanco: 0, peso: 0, fixo: 1 });
+    const nota = plano.t1 * .62, para = plano.fim;
+    tw(p, 'tempo', plano.duracao, plano.duracao, 0, lin);
+    tw(p, 'atencao', 1, .001, nota); tw(p, 'atencao', 0, .001, nota + .3); tw(p, 'atencao', 1, .001, nota + .62);
+    tw(p, 'aceno', 1, .75, para - .95);
+    tw(p, 'balanco', 1, .3, para - .35); tw(p, 'balanco', 0, .45, para + 1.35);
+    tw(p, 'aceno', 0, .95, para + 1.65);
+    tw(p, 'peso', 1, 1.8, para + .6);
+    tw(p, 'fixo', 0, 1.2, para + 1.3);
+  }
+  function acenar() {
+    if (!motor) return;
+    const p = motor.pose; limpa(['aceno', 'balanco']);
+    esperaDanca = agora() + 2.9;
+    tw(p, 'aceno', 1, .75); tw(p, 'balanco', 1, .3, .45); tw(p, 'balanco', 0, .45, 2.0); tw(p, 'aceno', 0, .95, 2.2);
+  }
+  // a dança (clipes do GLB) entra por cima do motor com peso suave
+  function aplicaDanca(dt, quer) {
+    dancaW += ((quer ? 1 : 0) - dancaW) * (1 - Math.exp(-dt * 2.6));
+    if (dancaW < .003) { if (danca) { danca.stop(); danca = null; } return; }
+    if (!danca) { danca = acoes[Math.random() < .5 ? 'danca' : 'danca2']; danca.reset().play(); voltas = 0; }
+    for (const b of ossos) { let s_ = salvo.get(b); if (!s_) salvo.set(b, s_ = [new THREE.Quaternion(), new THREE.Vector3()]); s_[0].copy(b.quaternion); s_[1].copy(b.position); }
+    mixer.update(dt);
+    for (const b of ossos) { const [q, p] = salvo.get(b); b.quaternion.slerpQuaternions(q, b.quaternion.clone(), dancaW); b.position.lerpVectors(p, b.position.clone(), dancaW); }
+  }
 
   // sombra suave no chão
   const sombraTex = (() => { const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d'); const gr = x.createRadialGradient(64, 64, 4, 64, 64, 62); gr.addColorStop(0, 'rgba(0,0,0,.45)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); x.fillStyle = gr; x.fillRect(0, 0, 128, 128); return new THREE.CanvasTexture(c); })();
   const sombra = new THREE.Mesh(new THREE.PlaneGeometry(.75, .3), new THREE.MeshBasicMaterial({ map: sombraTex, transparent: true, depthWrite: false }));
-  sombra.rotation.x = -Math.PI / 2; sombra.position.y = -H / 2 + .002; raiz.add(sombra);
+  sombra.rotation.x = -Math.PI / 2; sombra.position.y = .003; sombra.scale.setScalar(1.6); raizC.add(sombra);
 
   // estados por slide: x em fração da largura visível, escala e giro
   const ESTADOS = {
@@ -299,14 +350,14 @@ const cena = (function () {
 
   // rótulos dos detalhes: duas colunas fixas, linhas com cotovelo
   const HOTS = [
-    ['Cachos com mechas laranja', 'O cabelo é a energia dela', [.067, .952, .152], 1],
-    ['Sobrancelha descolorida', 'Atitude e tendência', [.058, .869, .153], 1],
-    ['Fone de fio', 'A rádio sempre no ouvido', [.106, .801, .103], 1],
-    ['Camisa e gravata', 'O toque vintage', [.003, .573, .141], 1],
-    ['Bermuda cargo', 'Conforto de quem vive na rua', [.115, .318, .132], 1],
+    ['Cachos com mechas laranja', 'O cabelo é a energia dela', [0.108, 1.531, 0.244], 1],
+    ['Sobrancelha descolorida', 'Atitude e tendência', [0.093, 1.398, 0.246], 1],
+    ['Fone de fio', 'A rádio sempre no ouvido', [0.170, 1.288, 0.166], 1],
+    ['Camisa e gravata', 'O toque vintage', [0.005, 0.922, 0.227], 1],
+    ['Bermuda cargo', 'Conforto de quem vive na rua', [0.185, 0.511, 0.212], 1],
     ['Unhas coloridas', 'Detalhe de quem se cuida', 'mao', -1],
-    ['Suéter listrado', 'Pulso, Frequência e Sol', [-.075, .503, .128], -1],
-    ['Vans', 'Clássico que nunca sai de moda', [-.105, .042, .208], -1],
+    ['Suéter listrado', 'Pulso, Frequência e Sol', [-0.121, 0.809, 0.206], -1],
+    ['Vans', 'Clássico que nunca sai de moda', [-0.169, 0.068, 0.335], -1],
   ];
   const hotsEl = $('#hots'), hotSvg = $('#hotsvg');
   hotsEl.innerHTML = HOTS.map(([t, d, , l]) => `<div class="hot ${l < 0 ? 'esq' : ''}"><span class="rot">${t}<small>${d}</small></span></div>`).join('');
@@ -338,14 +389,16 @@ const cena = (function () {
     entra += (1 - entra) * L(2.4); giroExtra *= Math.exp(-dt * 3.6);
     arrastoRy += arrastoV; arrastoV *= Math.exp(-dt * 5); if (alvoNome !== 'hero') arrastoRy *= Math.exp(-dt * 3);
     const dancando = tocando && alvoNome && alvoNome !== 'hots';
-    let ry = atualE.ry + arrastoRy + (1 - entra) * -1.1 + giroExtra + mouse.x * .25;
+    tick();
+    let ry = atualE.ry + arrastoRy + giroExtra;
     let by = 0, rz = 0;
     if (alvoNome === 'hots') ry = Math.sin(t * .5) * .32 + mouse.x * .15;
-    if (mixer) mixer.update(REDUZ ? 0 : dt);
-    if (mixer && atualAcao && (atualAcao === acoes.parada) === !!dancando && atualAcao !== acoes.tchau && atualAcao !== acoes.comemora) tocarAnim(emLoop(), .5);
+    if (motor) {
+      motor.update(REDUZ ? 0 : dt, t, { camera: cam, ponteiro: { x: mouse.x, y: mouse.y }, follow: alvoNome === 'hots' ? .3 : 1, vivo: REDUZ ? 0 : 1, retrato: cam.aspect < .9 });
+      aplicaDanca(REDUZ ? 0 : dt, dancando && agora() > esperaDanca && !(motor.plano && motor.pose.tempo < motor.plano.duracao));
+    }
     pulo *= Math.exp(-dt * 6); by += Math.sin((1 - pulo) * Math.PI) * pulo * .09;
-    corpo.rotation.set(-mouse.y * .05, ry, rz); corpo.position.y = by;
-    sombra.scale.setScalar(1 - by * 3);
+    corpo.rotation.set(0, ry, rz); corpo.position.y = by;
     canvas.style.opacity = Math.min(1, vis * 1.4);
     renderer.render(scene, cam);
     // rótulos
@@ -380,13 +433,16 @@ const cena = (function () {
 
   return {
     alvo(nome, primeira) {
-      if (nome && !alvoNome && primeira) { entra = 0; setTimeout(() => { if (alvoNome === 'hero' && atualAcao === acoes.parada) tocarAnim('tchau', .45); }, 1300); }
+      const antes = alvoNome;
       alvoNome = nome && ESTADOS[nome] ? nome : null;
+      if (alvoNome === 'hero' && primeira) { vis = 1; Object.assign(atualE, { ...ESTADOS.hero }); chegar(); }
+      else if (alvoNome === 'fecho' && primeira) setTimeout(acenar, 900);
+      else if (alvoNome && !antes) setTimeout(acenar, 700);
       if (alvoNome === 'hots') hotT0 = performance.now();
       if (alvoNome && atualE.y < -1) { Object.assign(atualE, { ...ESTADOS[alvoNome] }); }
     },
-    pulo() { tocarAnim(atualAcao === acoes.tchau || (tocando && atualAcao !== acoes.parada) ? 'comemora' : 'tchau', .25); },
-    acenar() { tocarAnim('tchau', .3); },
+    pulo() { acenar(); },
+    acenar,
   };
 })();
 
