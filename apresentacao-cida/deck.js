@@ -26,11 +26,11 @@ function irPara(n, dir = 1) {
   if (n === atual || ocupado) return;
   const proximo = slides[n], anterior = slides[atual];
   const sobe = proximo.dataset.entra === 'sobe' && dir > 0;
-  const troca = () => {
+  const troca = (semFundo) => {
     if (anterior) anterior.classList.remove('on');
     // reinicia as animações de entrada
     proximo.classList.remove('on'); void proximo.offsetWidth; proximo.classList.add('on');
-    bg.style.backgroundColor = proximo.dataset.bg;
+    if (!semFundo) bg.style.backgroundColor = proximo.dataset.bg;
     const ui = proximo.dataset.ui === 'escuro' ? 'escuro' : 'claro';
     [topo, base].forEach(e => { e.classList.toggle('escuro', ui === 'escuro'); e.classList.toggle('claro', ui === 'claro'); });
     atual = n; aoEntrar(n);
@@ -44,10 +44,15 @@ function irPara(n, dir = 1) {
   if (sobe) {
     // a ficha da persona sobe por cima do card, como no app
     proximo.style.transition = 'none'; proximo.style.transform = 'translateY(100%)';
-    troca(); anterior.classList.add('on');
+    proximo.style.background = proximo.dataset.bg; proximo.style.borderRadius = '44px 44px 0 0';
+    proximo.style.boxShadow = '0 -30px 80px rgba(0,0,0,.35)';
+    troca(true); anterior.classList.add('on');
     requestAnimationFrame(() => requestAnimationFrame(() => {
-      proximo.style.transition = 'transform .9s cubic-bezier(.76,0,.24,1)'; proximo.style.transform = 'translateY(0)';
-      setTimeout(() => { anterior.classList.remove('on'); proximo.style.transition = ''; proximo.style.transform = ''; ocupado = false; }, 950);
+      proximo.style.transition = 'transform .95s cubic-bezier(.76,0,.24,1), border-radius .95s cubic-bezier(.76,0,.24,1)'; proximo.style.transform = 'translateY(0)'; proximo.style.borderRadius = '0';
+      setTimeout(() => {
+        bg.style.transition = 'none'; bg.style.backgroundColor = proximo.dataset.bg; void bg.offsetWidth; bg.style.transition = '';
+        anterior.classList.remove('on'); Object.assign(proximo.style, { transition: '', transform: '', background: '', borderRadius: '', boxShadow: '' }); ocupado = false;
+      }, 1000);
     }));
     return;
   }
@@ -345,4 +350,8 @@ const loader = $('#loader');
 const inicio = Math.max(1, Math.min(N, parseInt(location.hash.slice(1)) || 1)) - 1;
 function comeca() { loader.classList.add('fora'); setTimeout(() => loader.remove(), 1100); irPara(inicio, 1); }
 if (REDUZ) { $('#loaderNum').textContent = '97.7'; comeca(); }
-else document.fonts.ready.then(() => sintoniza($('#loaderNum'), 87.5, 97.7, 1700, () => setTimeout(comeca, 350)));
+else {
+  let foi = false; const vai = () => { if (!foi) { foi = true; comeca(); } };
+  Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 1500))]).then(() => sintoniza($('#loaderNum'), 87.5, 97.7, 1400, () => setTimeout(vai, 250)));
+  setTimeout(vai, 4200);
+}
