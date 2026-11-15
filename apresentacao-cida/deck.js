@@ -289,24 +289,20 @@ const cena = (function () {
     if (chegarPendente) chegar();
   });
 
-  // a chegada (motion/chegada.js): entra pela direita andando, nota a câmera, para de frente e acena
+  // a chegada, sem andar: ela surge de frente, nota a câmera (os olhos chegam antes da cabeça) e acena
   function chegar() {
     if (!motor) { chegarPendente = true; return; }
     chegarPendente = false;
-    const p = motor.pose, z = -1.2, dist = cam.position.z;
-    const visW = 2 * Math.tan(cam.fov * Math.PI / 360) * dist * cam.aspect;
-    const meia = (visW / 2) * (dist - z) / dist;
-    const plano = motor.entrar({ x: meia + .45, z });
-    limpa(['tempo', 'atencao', 'aceno', 'balanco', 'peso', 'fixo']);
-    Object.assign(p, { tempo: 0, atencao: 0, aceno: 0, balanco: 0, peso: 0, fixo: 1 });
-    const nota = plano.t1 * .62, para = plano.fim;
-    tw(p, 'tempo', plano.duracao, plano.duracao, 0, lin);
-    tw(p, 'atencao', 1, .001, nota); tw(p, 'atencao', 0, .001, nota + .3); tw(p, 'atencao', 1, .001, nota + .62);
-    tw(p, 'aceno', 1, .75, para - .95);
-    tw(p, 'balanco', 1, .3, para - .35); tw(p, 'balanco', 0, .45, para + 1.35);
-    tw(p, 'aceno', 0, .95, para + 1.65);
-    tw(p, 'peso', 1, 1.8, para + .6);
-    tw(p, 'fixo', 0, 1.2, para + 1.3);
+    const p = motor.pose;
+    limpa(['atencao', 'aceno', 'balanco', 'peso', 'fixo']);
+    Object.assign(p, { atencao: 0, aceno: 0, balanco: 0, peso: 0, fixo: 1 });
+    esperaDanca = agora() + 3.6;
+    tw(p, 'atencao', 1, .001, .5); tw(p, 'atencao', 0, .001, .75); tw(p, 'atencao', 1, .001, 1.05);
+    tw(p, 'aceno', 1, .75, 1.1);
+    tw(p, 'balanco', 1, .3, 1.55); tw(p, 'balanco', 0, .45, 3.0);
+    tw(p, 'aceno', 0, .95, 3.3);
+    tw(p, 'peso', 1, 1.8, 2.2);
+    tw(p, 'fixo', 0, 1.2, 3.4);
   }
   function acenar() {
     if (!motor) return;
@@ -395,7 +391,7 @@ const cena = (function () {
     if (alvoNome === 'hots') ry = Math.sin(t * .5) * .32 + mouse.x * .15;
     if (motor) {
       motor.update(REDUZ ? 0 : dt, t, { camera: cam, ponteiro: { x: mouse.x, y: mouse.y }, follow: alvoNome === 'hots' ? .3 : 1, vivo: REDUZ ? 0 : 1, retrato: cam.aspect < .9 });
-      aplicaDanca(REDUZ ? 0 : dt, dancando && agora() > esperaDanca && !(motor.plano && motor.pose.tempo < motor.plano.duracao));
+      aplicaDanca(REDUZ ? 0 : dt, dancando && agora() > esperaDanca);
     }
     pulo *= Math.exp(-dt * 6); by += Math.sin((1 - pulo) * Math.PI) * pulo * .09;
     corpo.rotation.set(0, ry, rz); corpo.position.y = by;
@@ -435,7 +431,7 @@ const cena = (function () {
     alvo(nome, primeira) {
       const antes = alvoNome;
       alvoNome = nome && ESTADOS[nome] ? nome : null;
-      if (alvoNome === 'hero' && primeira) { vis = 1; Object.assign(atualE, { ...ESTADOS.hero }); chegar(); }
+      if (alvoNome === 'hero' && primeira) chegar();
       else if (alvoNome === 'fecho' && primeira) setTimeout(acenar, 900);
       else if (alvoNome && !antes) setTimeout(acenar, 700);
       if (alvoNome === 'hots') hotT0 = performance.now();
