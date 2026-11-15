@@ -21,7 +21,8 @@ body{font-family:'Montserrat',Arial,sans-serif;background:var(--freq);color:var(
 .rings svg{width:100%;height:100%;animation:spin 60s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .face{position:relative;width:min(48vh,40vw);height:min(48vh,40vw);border-radius:50%;overflow:hidden;border:10px solid var(--papel);box-shadow:0 18px 0 rgba(18,19,22,.25);background:#7a3a22;animation:bob 3.2s ease-in-out infinite}
-.face img{position:absolute;inset:-6%;width:112%;height:112%;object-fit:cover;opacity:0}
+.face img{position:absolute;inset:-6%;width:112%;height:112%;object-fit:cover;opacity:0;transition:opacity 70ms linear}
+.face img.base{opacity:1;transition:none}
 .face img.on{opacity:1}
 .stage.talking .face{animation:bob 1.1s ease-in-out infinite}
 @keyframes bob{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-8px) rotate(-1deg)}}
@@ -109,14 +110,15 @@ const API_URL = "https://ygvckbjzxxpqchqpyoug.supabase.co/functions/v1/cida";
 const SHAPES=['repouso','a','e','i','o','u','mbp','fv','l'];
 const face=document.getElementById('face'),imgs={};
 SHAPES.forEach(n=>{const im=new Image();im.src=`img/fala-${n}.webp`;im.alt='';face.appendChild(im);imgs[n]=im});
-let cur='';function mouth(n){if(n===cur)return;if(imgs[cur])imgs[cur].classList.remove('on');imgs[n].classList.add('on');cur=n}
+let cur='';function mouth(n){if(n===cur)return;if(imgs[cur]&&cur!=='repouso')imgs[cur].classList.remove('on');if(n!=='repouso')imgs[n].classList.add('on');cur=n}
+imgs.repouso.classList.add('base');
 mouth('repouso');
 const MOODS={feliz:'expc-feliz',chocada:'expc-chocada',curtindo:'expc-curtindo',desconfiada:'expc-desconfiada',rindo:'expc-rindo',piscadinha:'expc-piscadinha'};
 Object.values(MOODS).forEach(f=>{new Image().src=`img/${f}.webp`});
 function viseme(ch){
   const c=ch.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
-  if('a'.includes(c))return 'a'; if(c==='e')return 'e'; if(c==='i'||c==='y')return 'i'; if(c==='o')return 'o'; if(c==='u'||c==='w')return 'u';
-  if('mbp'.includes(c))return 'mbp'; if('fv'.includes(c))return 'fv'; if('ltdn'.includes(c))return 'l';
+  if('a'.includes(c))return 'a'; if(c==='e')return 'e'; if(c==='i'||c==='y')return 'i'; if(c==='o')return 'o'; if(c==='u'||c==='w')return 'o';
+  if('mbp'.includes(c))return 'mbp'; if('fv'.includes(c))return 'l'; if('ltdn'.includes(c))return 'l';
   if('szxjç'.includes(c))return 'i'; if(/[a-z]/.test(c))return 'e'; return 'repouso';
 }
 
@@ -188,13 +190,12 @@ function mouthTrack(u8){
     for(let f=0;f<F;f++){
       const x=Math.min(sm[f]/peak,1.2),hiss=zcr[f]>0.28;
       let want;
-      if(x<0.1)want='repouso';
+      if(x<0.12)want='repouso';
       else if(hiss&&x<0.6)want='i';
-      else if(x<0.3)want=(alt%2?'l':'mbp');
-      else if(x<0.55)want='e';
-      else if(x<0.8)want=(alt%3===0?'u':'o');
-      else want='a';
-      if(want!==cur&&hold<=0){cur=want;hold=9;if(want==='l'||want==='mbp'||want==='o'||want==='u')alt++}
+      else if(x<0.35)want='l';
+      else if(x<0.62)want='e';
+      else want=(alt%4===3?'o':'a');
+      if(want!==cur&&hold<=0){cur=want;hold=11;if(want==='a'||want==='o')alt++}
       hold--;track[f]=cur;
     }
     return track}catch(e){return null}
@@ -222,7 +223,7 @@ function speakAudio(text,bubble,v){
     player.onended=finish;player.onerror=finish;
     player.src=v.url;
     player.play().then(()=>requestAnimationFrame(frame)).catch(()=>{done=true;URL.revokeObjectURL(v.url);
-      toast('Toque na tela para liberar o som da Cida.');speak(text,bubble,true).then(res)});
+      toast('Toque na tela para liberar o som da Cida.');speak(text,bubble,false).then(res)});
   });
 }
 
@@ -270,7 +271,7 @@ async function send(q){
   const wantVoice=document.getElementById('voz').checked;
   const v=(wantVoice&&a.ai)?await fetchVoice(a.text,a.mood):null;
   showMood(a.mood);const b=addCida(a.mood);
-  if(v)await speakAudio(a.text,b,v); else await speak(a.text,b);
+  if(v)await speakAudio(a.text,b,v); else await speak(a.text,b,false);
   busy=false;
 }
 document.getElementById('form').addEventListener('submit',e=>{e.preventDefault();const i=document.getElementById('inp');const v=i.value;i.value='';send(v)});
