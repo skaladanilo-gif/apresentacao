@@ -334,8 +334,12 @@ micBtn.onclick=()=>{
 };
 
 document.addEventListener('pointerdown',unlockAudio,{once:true});
+// ===== Embutido no site da rádio =====
+const QS=new URLSearchParams(location.search);
+if(QS.has('embed')){document.querySelector('.tag').style.display='none'}
 // ===== Boas-vindas =====
-setTimeout(()=>{showMood('feliz');const b=addCida('feliz');speakWelcome(b)},600);
+if(QS.get('q')){setTimeout(()=>send(QS.get('q')),500)}
+else setTimeout(()=>{showMood('feliz');const b=addCida('feliz');speakWelcome(b)},600);
 function speakWelcome(b){
   // o navegador só libera a voz depois do primeiro clique: a boas-vindas é só animada
   speak('Oiê! Eu sou a Cida, da Rádio Cidade 97.7. Pode perguntar o que tá tocando, pedir um babado ou uma indicação de música!',b,false)}
