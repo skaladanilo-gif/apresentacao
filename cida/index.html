@@ -91,7 +91,7 @@ form input{flex:1;font:600 16px 'Montserrat',sans-serif;padding:14px 16px;border
       <button type="button" class="btn mic" id="mic" title="Falar com a Cida" aria-label="Falar com a Cida">🎙️</button>
       <button type="submit" class="btn send" title="Enviar" aria-label="Enviar">➤</button>
     </form>
-    <div class="opts"><label><input type="checkbox" id="voz" checked> Voz</label><label>Voz de <select id="prov"><option value="gemini">Gemini (Leda)</option><option value="eleven">ElevenLabs</option></select></label><span id="modo">modo demonstração</span></div>
+    <div class="opts"><label><input type="checkbox" id="voz" checked> Voz da Cida ligada</label><select id="prov" hidden><option value="gemini">Gemini</option><option value="eleven">ElevenLabs</option></select><span id="modo">modo demonstração</span></div>
   </section>
 </div>
 <div class="note" id="note"></div>
@@ -168,7 +168,7 @@ function speak(text,bubble,allowVoice=true){
 const player=new Audio();player.preload='auto';
 const SILENT='data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
 let unlocked=false;
-const prov=document.getElementById('prov');try{const v=localStorage.getItem('cida-voz');if(v)prov.value=v}catch(e){}
+const prov=document.getElementById('prov');
 prov.onchange=()=>{try{localStorage.setItem('cida-voz',prov.value)}catch(e){}};
 function unlockAudio(){
   if(unlocked)return;unlocked=true;
