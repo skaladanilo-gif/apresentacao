@@ -335,10 +335,10 @@ const cena = (function () {
     raiz.position.set(atualE.x * vw, atualE.y * vh - (1 - vis) * vh * .9, 0);
     raiz.scale.setScalar(atualE.s * (.85 + .15 * vis));
     // entrada com giro
-    entra += (1 - entra) * L(1.5); giroExtra *= Math.exp(-dt * 3.6);
+    entra += (1 - entra) * L(2.4); giroExtra *= Math.exp(-dt * 3.6);
     arrastoRy += arrastoV; arrastoV *= Math.exp(-dt * 5); if (alvoNome !== 'hero') arrastoRy *= Math.exp(-dt * 3);
     const dancando = tocando && alvoNome && alvoNome !== 'hots';
-    let ry = atualE.ry + arrastoRy + (1 - entra) * Math.PI * 2.2 + giroExtra + mouse.x * .25;
+    let ry = atualE.ry + arrastoRy + (1 - entra) * -1.1 + giroExtra + mouse.x * .25;
     let by = 0, rz = 0;
     if (alvoNome === 'hots') ry = Math.sin(t * .5) * .32 + mouse.x * .15;
     if (mixer) mixer.update(REDUZ ? 0 : dt);
@@ -380,7 +380,7 @@ const cena = (function () {
 
   return {
     alvo(nome, primeira) {
-      if (nome && !alvoNome && primeira) { entra = 0; setTimeout(() => { if (alvoNome === 'hero') tocarAnim('tchau', .3); }, 1700); }
+      if (nome && !alvoNome && primeira) { entra = 0; setTimeout(() => { if (alvoNome === 'hero' && atualAcao === acoes.parada) tocarAnim('tchau', .45); }, 1300); }
       alvoNome = nome && ESTADOS[nome] ? nome : null;
       if (alvoNome === 'hots') hotT0 = performance.now();
       if (alvoNome && atualE.y < -1) { Object.assign(atualE, { ...ESTADOS[alvoNome] }); }
