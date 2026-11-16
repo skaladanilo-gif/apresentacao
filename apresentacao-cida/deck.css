@@ -380,3 +380,24 @@ body:not(.primeiro) .dica{opacity:0}
 .trio{list-style:none;display:flex;gap:8px;margin-top:28px}
 .trio li{font-weight:800;font-size:14px;border:2px solid rgba(255,255,255,.55);border-radius:999px;padding:7px 14px;opacity:.7}
 .trio li.on{background:var(--papel);color:var(--ink);border-color:var(--papel);opacity:1}
+
+/* personas do grupo: foto real no card e ficha com perfil */
+.carta .foto img{object-position:50% 12%;pointer-events:none}
+.ficha-p .av{background:var(--papel)}
+.ficha-p .grid{grid-template-columns:.85fr 1.35fr;align-items:stretch}
+.pcol{display:flex;flex-direction:column;gap:22px;min-height:0}
+.pcol .dia{gap:14px;justify-content:flex-start;flex:none}
+.pcol .dia b{font-size:clamp(22px,2vw,30px)}
+.pcol .dia span{font-size:14px;opacity:.75}
+.perfil{font-weight:600;font-size:clamp(14px,1.08vw,17px);line-height:1.5;color:var(--papel);border-top:2px solid rgba(255,255,255,.18);padding-top:18px}
+.perfil b{display:block;font-family:'Lito';font-weight:400;font-size:26px;text-transform:uppercase;color:var(--sol);margin-bottom:8px;line-height:1}
+.ficha-p .cartas{grid-auto-rows:auto;grid-template-rows:1fr auto;align-content:stretch}
+.ficha-p .carac{padding:22px 24px;justify-content:flex-start}
+.ficha-p .carac dt{font-size:clamp(24px,2vw,34px)}
+.ficha-p .carac dd{font-size:clamp(13.5px,1.02vw,16px);line-height:1.45;font-weight:600;margin-top:12px}
+.ficha-p .carac.larga{grid-column:span 2}
+.ficha-p .carac ul{list-style:none;display:flex;flex-direction:column;gap:7px}
+.ficha-p .carac li{padding-left:16px;position:relative}
+.ficha-p .carac li::before{content:'';position:absolute;left:0;top:.5em;width:7px;height:7px;border-radius:50%;background:currentColor}
+.ficha-p .nota{opacity:.5}
+@media (max-width:900px){.ficha-p .grid{grid-template-columns:1fr;gap:26px}.ficha-p .carac.larga{grid-column:auto}.ficha-p .cartas{grid-template-columns:1fr;grid-template-rows:none}.pcol .dia{flex-direction:column}}
