@@ -421,7 +421,7 @@ else setTimeout(()=>{showMood('feliz');const b=addCida('feliz');speakWelcome(b)}
 if(API_URL)fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:'{"acao":"ping"}'}).catch(()=>{});
 const BOAS='Oiê! Eu sou a Cida, da Rádio Cidade 97.7. Pode perguntar o que tá tocando, pedir um babado ou uma indicação de música!';
 let welcomeDone=false,welcomeV=null;
-const welcomeLoad=fetch('voz/boasvindas.wav').then(r=>r.arrayBuffer()).then(ab=>{const u8=new Uint8Array(ab);welcomeV={url:URL.createObjectURL(new Blob([u8],{type:'audio/wav'})),track:mouthTrack(u8),revoke:false}}).catch(()=>{});
+const welcomeLoad=fetch('voz/boasvindas.wav?v=2').then(r=>r.arrayBuffer()).then(ab=>{const u8=new Uint8Array(ab);welcomeV={url:URL.createObjectURL(new Blob([u8],{type:'audio/wav'})),track:mouthTrack(u8),revoke:false}}).catch(()=>{});
 async function speakWelcome(b){
   await welcomeLoad;
   if(welcomeV&&document.getElementById('voz').checked){
