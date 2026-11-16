@@ -133,16 +133,50 @@ let tocando = false;
 function setToca(on) {
   tocando = on; document.body.classList.toggle('tocando', on);
 }
+// se o sinal ao vivo não vier, toca as vinhetas gravadas da rádio
+const RESERVA = ['../audio/radio-1.mp3', '../audio/radio-2.mp3'];
+let reserva = -1, vigia = 0;
+function tocaReserva() {
+  if (!tocando) return;
+  clearTimeout(vigia); reserva = 0; radio.src = RESERVA[0];
+  radio.play().catch(() => setToca(false));
+}
 async function toca(btn) {
   if (btn) { const o = document.createElement('span'); o.className = 'onda'; btn.appendChild(o); setTimeout(() => o.remove(), 1300); }
   cena.pulo();
-  if (tocando) { radio.pause(); radio.removeAttribute('src'); radio.load(); setToca(false); return; }
-  setToca(true);
+  if (tocando) { clearTimeout(vigia); reserva = -1; radio.pause(); radio.removeAttribute('src'); radio.load(); setToca(false); return; }
+  setToca(true); reserva = -1;
   radio.src = STREAM + '?t=' + Date.now();
-  try { await radio.play(); } catch (e) { setToca(false); }
+  vigia = setTimeout(tocaReserva, 5000); // 5 s sem som: vai para a reserva
+  try { await radio.play(); } catch (e) { if (reserva < 0) tocaReserva(); }
 }
 $$('.js-toca').forEach(b => b.addEventListener('click', () => toca(b)));
-radio.onerror = () => { if (tocando) setToca(false); };
+radio.addEventListener('playing', () => { if (reserva < 0) clearTimeout(vigia); });
+radio.onerror = () => { if (tocando && reserva < 0) tocaReserva(); else if (tocando) setToca(false); };
+radio.onended = () => {
+  if (reserva < 0 || !tocando) return;
+  if (++reserva < RESERVA.length) { radio.src = RESERVA[reserva]; radio.play().catch(() => setToca(false)); }
+  else { reserva = -1; radio.removeAttribute('src'); setToca(false); }
+};
+
+// slide 16: tocar numa foto amplia ela no destaque
+(() => {
+  const h = $('#ruaHeroi'); if (!h) return;
+  const img = $('img', h), cap = $('figcaption', h), ini = { src: img.src, alt: img.alt, cap: cap.innerHTML };
+  const mostra = (src, alt, html, outra) => {
+    h.classList.add('troca');
+    setTimeout(() => { img.src = src; img.alt = alt; cap.innerHTML = html; h.classList.toggle('outra', outra); img.decode ? img.decode().finally(() => h.classList.remove('troca')) : h.classList.remove('troca'); }, 180);
+  };
+  $$('#s16 .th').forEach(b => b.addEventListener('click', () => {
+    const on = b.classList.contains('on');
+    $$('#s16 .th').forEach(x => x.classList.remove('on'));
+    if (on) return mostra(ini.src, ini.alt, ini.cap, false);
+    b.classList.add('on');
+    const g = b.closest('.g');
+    mostra(`img/rua/${b.dataset.f}.webp`, $('img', b).alt, `<b>${b.dataset.nome}</b><span>${$('h3', g).textContent}: ${$('p', g).textContent}</span>`, true);
+  }));
+  $('.volta', h).addEventListener('click', () => { $$('#s16 .th').forEach(x => x.classList.remove('on')); mostra(ini.src, ini.alt, ini.cap, false); });
+})();
 
 // celular: a página da Cida roda em 430 px e é reduzida para caber
 function ajustaCel() { $$('.celular .tela').forEach(t => t.style.setProperty('--k', (t.clientWidth / 430).toFixed(4))); }

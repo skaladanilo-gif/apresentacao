@@ -421,13 +421,18 @@ const PLAY='<path d="M7 4.5v15l13-7.5z"/>',PAUSE='<path d="M6 4h4v16H6zM14 4h4v1
 function setUI(on,txt){player.classList.toggle('paused',!on);ppIcon.innerHTML=discoIcon.innerHTML=on?PAUSE:PLAY;disco.classList.toggle('on',on);
   pp.setAttribute('aria-label',on?'Pausar':'Tocar');pstatus.textContent=txt||(on?'Ao vivo':'Pausado');
   document.querySelectorAll('.top .js-play span').forEach(s=>s.textContent=on?'Pausar':'Ouvir ao vivo')}
-async function play(){player.classList.add('show');setUI(true,'Conectando…');audio.src=STREAM+'?t='+Date.now();
-  try{await audio.play();setUI(true)}catch(e){setUI(false,'Não conectou. Toque de novo.')}}
-function pause(){audio.pause();audio.removeAttribute('src');audio.load();setUI(false)}
+// se o sinal ao vivo não vier em 5 s, toca as vinhetas gravadas da rádio
+const RESERVA=['../audio/radio-1.mp3','../audio/radio-2.mp3'];let reserva=-1,vigia=0;
+function tocaReserva(){clearTimeout(vigia);reserva=0;audio.src=RESERVA[0];audio.play().then(()=>setUI(true)).catch(()=>setUI(false,'Não conectou. Toque de novo.'))}
+async function play(){player.classList.add('show');setUI(true,'Conectando…');reserva=-1;audio.src=STREAM+'?t='+Date.now();
+  vigia=setTimeout(tocaReserva,5000);
+  try{await audio.play();clearTimeout(vigia);setUI(true)}catch(e){if(reserva<0)tocaReserva()}}
+function pause(){clearTimeout(vigia);reserva=-1;audio.pause();audio.removeAttribute('src');audio.load();setUI(false)}
+audio.onended=()=>{if(reserva<0)return;if(++reserva<RESERVA.length){audio.src=RESERVA[reserva];audio.play().catch(()=>{})}else{reserva=-1;audio.removeAttribute('src');setUI(false)}};
 document.querySelectorAll('.js-play').forEach(b=>b.onclick=()=>audio.paused?play():pause());
 pp.onclick=()=>audio.paused?play():pause();
 document.getElementById('vol').oninput=e=>audio.volume=+e.target.value;
-audio.onerror=()=>{if(player.classList.contains('show')&&audio.getAttribute('src'))setUI(false,'Sinal fora do ar. Tente de novo.')};
+audio.onerror=()=>{if(!player.classList.contains('show')||!audio.getAttribute('src'))return;if(reserva<0)tocaReserva();else setUI(false,'Sinal fora do ar. Tente de novo.')};
 
 // ---------- Cida ----------
 const modal=document.getElementById('modal'),frame=document.getElementById('cidaFrame');
