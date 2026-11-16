@@ -384,6 +384,7 @@ const cena = (function () {
     // entrada com giro
     entra += (1 - entra) * L(2.4); giroExtra *= Math.exp(-dt * 3.6);
     arrastoRy += arrastoV; arrastoV *= Math.exp(-dt * 5); if (alvoNome !== 'hero') arrastoRy *= Math.exp(-dt * 3);
+    { const LIM = .95; if (Math.abs(arrastoRy) > LIM) { arrastoRy += (Math.sign(arrastoRy) * LIM - arrastoRy) * L(9); arrastoV *= .5; } }
     const dancando = tocando && alvoNome && alvoNome !== 'hots';
     tick();
     let ry = atualE.ry + arrastoRy + giroExtra;
