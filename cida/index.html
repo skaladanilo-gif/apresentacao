@@ -46,6 +46,8 @@ body{font-family:'Montserrat',Arial,sans-serif;background:var(--freq);color:var(
 .m{display:flex;gap:10px;align-items:flex-end;max-width:92%}
 .m .b{padding:12px 16px;border-radius:20px;font-size:16px;line-height:1.45;font-weight:500}
 .m.cida .b{background:#fff;border:2px solid var(--asf);border-bottom-left-radius:6px}
+.b.dots{display:flex;gap:5px;align-items:center;padding:16px 18px}.b.dots i{width:8px;height:8px;border-radius:50%;background:var(--asf);opacity:.35;animation:dot 1s infinite}.b.dots i:nth-child(2){animation-delay:.15s}.b.dots i:nth-child(3){animation-delay:.3s}@keyframes dot{40%{opacity:1;transform:translateY(-3px)}}
+.m.cida .ouvir{align-self:flex-end;margin-left:6px;display:inline-flex;gap:6px;align-items:center;font:700 13px Montserrat,sans-serif;background:var(--pulso,#E61973);color:#fff;border:0;border-radius:99px;padding:8px 13px;cursor:pointer;animation:pulsa 1.4s ease-in-out infinite}.m.cida .ouvir svg{width:16px;height:16px}@keyframes pulsa{50%{transform:scale(1.06)}}
 .m.cida img{width:52px;height:58px;object-fit:contain;flex:none}
 .m.eu{align-self:flex-end}
 .m.eu .b{background:var(--freq);color:var(--papel);border-bottom-right-radius:6px}
@@ -195,8 +197,9 @@ const SILENT='data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAAB
 let unlocked=false;
 const prov=document.getElementById('prov');
 prov.onchange=()=>{try{localStorage.setItem('cida-voz',prov.value)}catch(e){}};
+player.addEventListener('playing',()=>{unlocked=true});
 function unlockAudio(){
-  if(unlocked)return;unlocked=true;
+  if(unlocked||!player.paused)return;unlocked=true;
   try{player.src=SILENT;const p=player.play();if(p)p.catch(()=>{unlocked=false})}catch(e){unlocked=false}
   if('speechSynthesis' in window){try{speechSynthesis.speak(new SpeechSynthesisUtterance(''))}catch(e){}}
 }
@@ -237,27 +240,38 @@ async function fetchVoice(text,mood){
     const bin=atob(j.audio),u8=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u8[i]=bin.charCodeAt(i);
     return {url:URL.createObjectURL(new Blob([u8],{type:j.mime||'audio/wav'})),track:mouthTrack(u8)};}catch(e){return null}
 }
-function speakAudio(text,bubble,v){
-  ++talkId;
+function speakAudio(text,bubble,v,from=0,to=text.length,last=true){
+  const my=++talkId;
   return new Promise(res=>{
-    let done=false,last=-1;setStatus('falando…','talking');
+    let done=false,lastI=-1;setStatus('falando…','talking');
     function frame(){
       if(done)return;
-      const d=player.duration||0,t=player.currentTime,p=d?Math.min(t/d,1):0,idx=Math.floor(p*text.length);
-      if(idx!==last){bubble.textContent=text.slice(0,Math.max(idx,1));last=idx;scrollDown()}
+      if(my!==talkId){finish(true);return}
+      const d=player.duration||0,t=player.currentTime,p=d&&isFinite(d)?Math.min(t/d,1):0,idx=from+Math.floor(p*(to-from));
+      if(idx!==lastI){bubble.textContent=text.slice(0,Math.max(idx,1));lastI=idx;scrollDown()}
       let m;
       if(v.track){m=v.track[Math.floor((t+0.03)*100)]||'repouso'}
-      else{m=idx<text.length?viseme(text[idx]):'repouso'}
+      else{m=idx<to?viseme(text[idx]):'repouso'}
       ringTarget=v.track&&v.track.amp?Math.min(1,(v.track.amp[Math.floor((t+0.03)*100)]||0)):(m==='repouso'?0.1:0.6);
       mouth(m);requestAnimationFrame(frame);
     }
-    function finish(){if(done)return;done=true;ringTarget=0;player.onended=player.onerror=null;bubble.textContent=text;mouth('repouso');setStatus('online agora');URL.revokeObjectURL(v.url);res()}
-    player.onended=finish;player.onerror=finish;
+    function finish(ok=true){if(done)return;done=true;const meu=my===talkId;if(meu){ringTarget=0;player.onended=player.onerror=null;mouth('repouso')}bubble.textContent=meu?text.slice(0,to):text;if(last&&meu)setStatus('online agora');if(v.revoke!==false)URL.revokeObjectURL(v.url);res(ok)}
+    player.onended=()=>finish(true);player.onerror=()=>finish(true);
     player.src=v.url;
-    player.play().then(()=>requestAnimationFrame(frame)).catch(()=>{done=true;URL.revokeObjectURL(v.url);
-      toast('Toque na tela para liberar o som da Cida.');speak(text,bubble,false).then(res)});
+    player.play().then(()=>requestAnimationFrame(frame)).catch(()=>{finish(false)});
   });
 }
+// trecho sem voz: só anima a boca e o texto
+function revealSilent(text,bubble,from,to){
+  const my=++talkId;
+  return new Promise(res=>{const t0=performance.now();setStatus('falando…','talking');
+    (function f(now){if(my!==talkId){bubble.textContent=text.slice(0,to);return res()}
+      const idx=Math.min(to,from+Math.floor((now-t0)/1000*17));bubble.textContent=text.slice(0,Math.max(idx,1));scrollDown();
+      const vm=idx<to?viseme(text[idx]):'repouso';ringTarget=vm==='repouso'?0.05:0.5;mouth(vm);
+      if(idx>=to){ringTarget=0;mouth('repouso');return res()}requestAnimationFrame(f)})(t0)});
+}
+function b64Voice(b64,mime){const bin=atob(b64),u8=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u8[i]=bin.charCodeAt(i);
+  return {url:URL.createObjectURL(new Blob([u8],{type:mime||'audio/wav'})),track:mouthTrack(u8)}}
 
 // ===== Conversa =====
 const msgs=document.getElementById('msgs');function scrollDown(){msgs.scrollTop=msgs.scrollHeight}
@@ -295,15 +309,51 @@ async function answer(q){
   return demo(q);
 }
 let busy=false;
+function typing(on){let t=document.getElementById('digitando');
+  if(on&&!t){t=document.createElement('div');t.id='digitando';t.className='m cida';t.innerHTML='<img src="img/'+MOODS.feliz+'.webp" alt=""><div class="b dots"><i></i><i></i><i></i></div>';msgs.appendChild(t);scrollDown()}
+  if(!on&&t)t.remove()}
+// pede texto e voz numa chamada só; a voz vem frase por frase e a 1ª já começa a tocar
+async function falaIA(withVoice){
+  const ac=new AbortController(),to=setTimeout(()=>ac.abort(),14000);
+  const r=await fetch(API_URL,{method:'POST',signal:ac.signal,headers:{'Content-Type':'application/json'},body:JSON.stringify({acao:'fala',voz:withVoice,messages:hist})});
+  if(!r.ok||!r.body)throw new Error('http');
+  const rd=r.body.getReader(),dec=new TextDecoder();let buf='',info=null;const waits={},got={};let fimR;const fim=new Promise(z=>fimR=z);
+  const parte=i=>i in got?Promise.resolve(got[i]):new Promise(z=>{waits[i]=z});
+  const ok=new Promise((resolve,reject)=>{
+    (async()=>{try{for(;;){const {value,done}=await rd.read();if(done)break;buf+=dec.decode(value,{stream:true});let k;
+      while((k=buf.indexOf('\n'))>=0){const line=buf.slice(0,k);buf=buf.slice(k+1);if(!line.trim())continue;const j=JSON.parse(line);
+        if(j.t==='texto'){info=j;clearTimeout(to);resolve(j)}
+        else if(j.t==='audio'||j.t==='semvoz'){const v=j.t==='audio'?b64Voice(j.audio,j.mime):null;got[j.i]=v;if(waits[j.i])waits[j.i](v)}
+        else if(j.t==='erro'){reject(new Error(j.detail||'erro'))}}}
+      }catch(e){reject(e)}finally{if(!info)reject(new Error('sem texto'));for(const i in waits)if(!(i in got))waits[i](null);fimR()}})();
+  });
+  const j=await ok;return {text:j.text,mood:j.mood||'feliz',partes:j.partes||[],parte,ai:true};
+}
 async function send(q){
-  q=(q||'').trim();if(!q||busy)return;busy=true;unlockAudio();
+  q=(q||'').trim();if(!q||busy)return;busy=true;unlockAudio();welcomeDone=true;
   addMe(q);hist.push({role:'user',content:q});
-  setStatus('digitando…');
-  const a=await answer(q);hist.push({role:'assistant',content:a.text});
+  setStatus('digitando…');typing(true);
   const wantVoice=document.getElementById('voz').checked;
-  const v=(wantVoice&&a.ai)?await fetchVoice(a.text,a.mood):null;
-  showMood(a.mood);const b=addCida(a.mood);
-  if(v)await speakAudio(a.text,b,v); else await speak(a.text,b,false);
+  let a=null;
+  if(API_URL){try{a=await falaIA(wantVoice);setModo('IA conectada')}catch(e){a=null}}
+  if(!a){a=await answer(q)}
+  hist.push({role:'assistant',content:a.text});
+  if(a.parte&&a.partes.length){
+    // posição de cada frase no texto, para a legenda acompanhar a voz
+    let cur=0;const cortes=a.partes.map((p,i)=>{const at=a.text.indexOf(p,cur);const s=at>=0?at:cur;cur=i===a.partes.length-1?a.text.length:(at>=0?at+p.length:Math.round(a.text.length*(i+1)/a.partes.length));return [s,cur]});
+    cortes[cortes.length-1][1]=a.text.length;
+    showMood(a.mood);setStatus('gravando áudio…');
+    const v0=await a.parte(0);typing(false);const b=addCida(a.mood);
+    for(let i=0;i<cortes.length;i++){
+      const v=i===0?v0:await a.parte(i);const [s,e]=cortes[i];const from=i===0?0:s;
+      if(v){const ok=await speakAudio(a.text,b,v,from,e,i===cortes.length-1);if(!ok){toast('Toque na tela para liberar o som da Cida.');await revealSilent(a.text,b,from,a.text.length);break}}
+      else if(i===0&&cortes.length===1&&document.getElementById('voz').checked&&voice)await speak(a.text,b,true); // sem a voz da IA: usa a voz do aparelho
+      else await revealSilent(a.text,b,from,e);
+    }
+    b.textContent=a.text;setStatus('online agora');
+  }else{
+    typing(false);showMood(a.mood);const b=addCida(a.mood);await speak(a.text,b,false);
+  }
   busy=false;
 }
 document.getElementById('form').addEventListener('submit',e=>{e.preventDefault();const i=document.getElementById('inp');const v=i.value;i.value='';send(v)});
@@ -367,9 +417,29 @@ if(QS.has('embed')){document.querySelector('.tag').style.display='none'}
 // ===== Boas-vindas =====
 if(QS.get('q')){setTimeout(()=>send(QS.get('q')),500)}
 else setTimeout(()=>{showMood('feliz');const b=addCida('feliz');speakWelcome(b)},600);
-function speakWelcome(b){
-  // o navegador só libera a voz depois do primeiro clique: a boas-vindas é só animada
-  speak('Oiê! Eu sou a Cida, da Rádio Cidade 97.7. Pode perguntar o que tá tocando, pedir um babado ou uma indicação de música!',b,false)}
+// acorda a função da IA enquanto a pessoa lê a boas-vindas
+if(API_URL)fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:'{"acao":"ping"}'}).catch(()=>{});
+const BOAS='Oiê! Eu sou a Cida, da Rádio Cidade 97.7. Pode perguntar o que tá tocando, pedir um babado ou uma indicação de música!';
+let welcomeDone=false,welcomeV=null;
+const welcomeLoad=fetch('voz/boasvindas.wav').then(r=>r.arrayBuffer()).then(ab=>{const u8=new Uint8Array(ab);welcomeV={url:URL.createObjectURL(new Blob([u8],{type:'audio/wav'})),track:mouthTrack(u8),revoke:false}}).catch(()=>{});
+async function speakWelcome(b){
+  await welcomeLoad;
+  if(welcomeV&&document.getElementById('voz').checked){
+    // tenta tocar sozinho (funciona quando a pessoa já clicou no site, como na apresentação)
+    const ok=await speakAudio(BOAS,b,welcomeV);
+    if(ok){welcomeDone=true;unlocked=true;return}
+  }
+  await speak(BOAS,b,false);
+  if(!welcomeV||welcomeDone)return;
+  // navegador bloqueou o som: o primeiro toque na tela faz ela falar
+  const bt=document.createElement('button');bt.type='button';bt.className='ouvir';
+  bt.innerHTML='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/></svg>Ouvir a Cida';
+  b.parentNode.appendChild(bt);scrollDown();
+  const tocar=async e=>{if(welcomeDone||busy)return;if(e&&e.target&&e.target.closest&&e.target.closest('form,#chips,#mic,.opts'))return;
+    welcomeDone=true;bt.remove();document.removeEventListener('pointerdown',tocar);unlockAudio();busy=true;
+    const ok=await speakAudio(BOAS,b,welcomeV);if(!ok)b.textContent=BOAS;busy=false};
+  bt.onclick=tocar;document.addEventListener('pointerdown',tocar);
+}
 </script>
 </body>
 </html>
