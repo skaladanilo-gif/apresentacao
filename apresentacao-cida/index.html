@@ -6,7 +6,7 @@
 <title>Rádio Cidade 97.7 · A Cida, nossa brand persona</title>
 <meta name="theme-color" content="#E61973">
 <link rel="preload" href="fonts/LitoStencil.otf" as="font" type="font/otf" crossorigin>
-<link rel="stylesheet" href="deck.css?v=13">
+<link rel="stylesheet" href="deck.css?v=14">
 <script type="importmap">{"imports":{"three":"./vendor/three.module.js","three/addons/":"./vendor/jsm/"}}</script>
 </head>
 <body>
@@ -377,8 +377,10 @@
       <img src="img/final/09_Fofoca_Terminos_carrossel-01.webp" alt="09 · Temporada de términos?" loading="lazy">
     </div>
     <div class="lado">
-      <h2 class="L t"><span><i>Arte +</i></span><span><i class="am">legenda.</i></span></h2>
-      <p class="mini clique a">Clique em um post para trocar a arte e a legenda</p>
+      <div class="lado-topo">
+        <h2 class="L t"><span><i>Arte +</i></span><span><i class="am">legenda.</i></span></h2>
+        <span class="dica-clique a"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11V5a2 2 0 0 1 4 0v6m0-1a2 2 0 0 1 4 0v1m0 0a2 2 0 0 1 4 0v4a7 7 0 0 1-7 7h-1a7 7 0 0 1-6-3.4L4 15a2 2 0 0 1 3.4-2L9 15"/></svg>Clique nos posts abaixo para ver cada arte e legenda</span>
+      </div>
       <div class="abas a" id="abas"><div class="ab-ed"><span>No Radar</span><button class="on" data-i="0" type="button">01 · BTS</button><button data-i="1" type="button">02 · Djavan</button><button data-i="2" type="button">03 · Megashow</button></div><div class="ab-ed"><span>Lançamento</span><button data-i="3" type="button">04 · Bi Festinha</button><button data-i="4" type="button">05 · IZA</button><button data-i="5" type="button">06 · GTA VI</button></div><div class="ab-ed"><span>Fofoca</span><button data-i="6" type="button">07 · Marina</button><button data-i="7" type="button">08 · Kamyla</button><button data-i="8" type="button">09 · Términos</button></div></div>
       <div class="legenda a">
         <div class="leg on" data-pecas="[[&quot;img/final/01_NoRadar_BTS_feed.webp&quot;, &quot;Feed&quot;], [&quot;img/final/01_NoRadar_BTS_stories.webp&quot;, &quot;Stories&quot;]]" data-principal="0"><p class="mini qual">01 · No Radar · BTS de volta em 2027?</p><div class="txt"><p>Gente, vem cá. 💜</p><p>Nem faz um mês que o BTS passou por São Paulo com três shows, e as ARMY´s já estão perguntando: volta em 2027?</p><p>Vou ser sincera com vocês: por enquanto é só torcida. A turnê ARIRANG segue rodando até março, e as novas datas de 2027 ainda não foram anunciadas.</p><p>Mas eu tô de olho. Se pintar novidade oficial, vocês sabem onde vão ouvir primeiro.</p><p>Se voltar, você vai? Responde com 💜 ou 😭</p><p class="hash">#RádioCidade #NoRadar #BTS #ARMY #KPop</p></div><div class="meta"><span>Feed estático + stories com enquete</span><span class="alerta">Possibilidade</span></div><div class="pecas"><span class="pc-dica">Clique para ver em tela cheia:</span><button class="pc" type="button" data-j="0" aria-label="Abrir Feed em tela cheia"><img src="img/final/01_NoRadar_BTS_feed-mini.webp" alt="" loading="lazy"><span>Feed</span></button><button class="pc" type="button" data-j="1" aria-label="Abrir Stories em tela cheia"><img src="img/final/01_NoRadar_BTS_stories-mini.webp" alt="" loading="lazy"><span>Stories</span></button></div></div>
@@ -398,19 +400,20 @@
 <!-- 15 · CALENDÁRIO -->
 <section class="s" id="s15" data-bg="#F7F4EB" data-nome="Calendário" data-ui="escuro">
   <h2 class="L t"><span><i>Três semanas</i></span><span><i class="rs">no ar.</i></span></h2>
+  <span class="dica-clique escura a"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11V5a2 2 0 0 1 4 0v6m0-1a2 2 0 0 1 4 0v1m0 0a2 2 0 0 1 4 0v4a7 7 0 0 1-7 7h-1a7 7 0 0 1-6-3.4L4 15a2 2 0 0 1 3.4-2L9 15"/></svg>Clique em um post para ver as artes em tela cheia</span>
   <div class="cal">
     <div class="sem a esq"><b>Semana 1</b><span>24 a 26 de novembro</span></div>
-    <div class="it a"><img src="img/final/01_NoRadar_BTS_feed-mini.webp" alt=""><div><em class="e-radar">No Radar</em><b>BTS de volta em 2027?</b><small>Feed + stories · ter 18h</small></div></div>
-    <div class="it a"><img src="img/final/05_Lancamento_IZA_capa-reels-mini.webp" alt=""><div><em class="e-lanc">Lançamento</em><b>IZA, “ZAZA”</b><small>Reels · qua 12h</small></div></div>
-    <div class="it a"><img src="img/final/09_Fofoca_Terminos_carrossel-01-mini.webp" alt=""><div><em class="e-fofoca">Fofoca</em><b>Temporada de términos?</b><small>Carrossel + stories · qui 18h</small></div></div>
+    <div class="it a" data-i="0" role="button" tabindex="0"><img src="img/final/01_NoRadar_BTS_feed-mini.webp" alt=""><div><em class="e-radar">No Radar</em><b>BTS de volta em 2027?</b><small>Feed + stories · ter 18h</small></div></div>
+    <div class="it a" data-i="4" role="button" tabindex="0"><img src="img/final/05_Lancamento_IZA_capa-reels-mini.webp" alt=""><div><em class="e-lanc">Lançamento</em><b>IZA, “ZAZA”</b><small>Reels · qua 12h</small></div></div>
+    <div class="it a" data-i="8" role="button" tabindex="0"><img src="img/final/09_Fofoca_Terminos_carrossel-01-mini.webp" alt=""><div><em class="e-fofoca">Fofoca</em><b>Temporada de términos?</b><small>Carrossel + stories · qui 18h</small></div></div>
     <div class="sem a esq"><b>Semana 2</b><span>1º a 3 de dezembro</span></div>
-    <div class="it a"><img src="img/final/02_NoRadar_Djavan_capa-reels-mini.webp" alt=""><div><em class="e-radar">No Radar</em><b>Djavan no Réveillon</b><small>Reels · ter 18h</small></div></div>
-    <div class="it a"><img src="img/final/04_Lancamento_BiFestinha_feed-mini.webp" alt=""><div><em class="e-lanc">Lançamento</em><b>Ludmilla, “Bi Festinha”</b><small>Feed + stories · qua 12h</small></div></div>
-    <div class="it a"><img src="img/final/07_Fofoca_Marina_feed-mini.webp" alt=""><div><em class="e-fofoca">Fofoca</em><b>Marina e Luma Costa</b><small>Feed + stories · qui 18h</small></div></div>
+    <div class="it a" data-i="1" role="button" tabindex="0"><img src="img/final/02_NoRadar_Djavan_capa-reels-mini.webp" alt=""><div><em class="e-radar">No Radar</em><b>Djavan no Réveillon</b><small>Reels · ter 18h</small></div></div>
+    <div class="it a" data-i="3" role="button" tabindex="0"><img src="img/final/04_Lancamento_BiFestinha_feed-mini.webp" alt=""><div><em class="e-lanc">Lançamento</em><b>Ludmilla, “Bi Festinha”</b><small>Feed + stories · qua 12h</small></div></div>
+    <div class="it a" data-i="6" role="button" tabindex="0"><img src="img/final/07_Fofoca_Marina_feed-mini.webp" alt=""><div><em class="e-fofoca">Fofoca</em><b>Marina e Luma Costa</b><small>Feed + stories · qui 18h</small></div></div>
     <div class="sem a esq"><b>Semana 3</b><span>8 a 10 de dezembro</span></div>
-    <div class="it a"><img src="img/final/03_NoRadar_Megashow_feed-mini.webp" alt=""><div><em class="e-radar">No Radar</em><b>Megashow na Paulista</b><small>Feed + stories · ter 18h</small></div></div>
-    <div class="it a"><img src="img/final/06_Lancamento_GTAVI_carrossel-01-mini.webp" alt=""><div><em class="e-lanc">Lançamento</em><b>A trilha de GTA VI</b><small>Carrossel + stories · qua 12h</small></div></div>
-    <div class="it a"><img src="img/final/08_Fofoca_Kamyla_capa-reels-mini.webp" alt=""><div><em class="e-fofoca">Fofoca</em><b>Kamyla Maria fala</b><small>Reels · qui 18h</small></div></div>
+    <div class="it a" data-i="2" role="button" tabindex="0"><img src="img/final/03_NoRadar_Megashow_feed-mini.webp" alt=""><div><em class="e-radar">No Radar</em><b>Megashow na Paulista</b><small>Feed + stories · ter 18h</small></div></div>
+    <div class="it a" data-i="5" role="button" tabindex="0"><img src="img/final/06_Lancamento_GTAVI_carrossel-01-mini.webp" alt=""><div><em class="e-lanc">Lançamento</em><b>A trilha de GTA VI</b><small>Carrossel + stories · qua 12h</small></div></div>
+    <div class="it a" data-i="7" role="button" tabindex="0"><img src="img/final/08_Fofoca_Kamyla_capa-reels-mini.webp" alt=""><div><em class="e-fofoca">Fofoca</em><b>Kamyla Maria fala</b><small>Reels · qui 18h</small></div></div>
   </div>
 </section>
 
@@ -428,7 +431,7 @@
     </figure>
     <div class="grupos">
       <div class="gtxt"><div class="g g-levar a"><h3>Pra levar</h3><p>Bolsa de crochê, sacola de feira, copo americano, caneca de ágata, boné, viseira e radinho de pilha. Brinde que faz parte da rotina, não da gaveta.</p></div><div class="g g-rua a"><h3>Na rua</h3><p>Banca de jornal e carrinho de picolé nas cores da Cidade, rodando pelo calçadão.</p></div><div class="g g-vestir a"><h3>Pra vestir</h3><p>Camisa de várzea “Cidade FC” pro público e camiseta minimalista pra equipe.</p></div><div class="g g-simbolo a"><h3>Símbolo</h3><p>A pulseira trançada das mãos do key visual, distribuída no estande.</p></div></div>
-      <p class="mini clique a">Clique nas fotos para ampliar</p>
+      <span class="dica-clique a"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11V5a2 2 0 0 1 4 0v6m0-1a2 2 0 0 1 4 0v1m0 0a2 2 0 0 1 4 0v4a7 7 0 0 1-7 7h-1a7 7 0 0 1-6-3.4L4 15a2 2 0 0 1 3.4-2L9 15"/></svg>Clique nas fotos para ampliar</span>
       <div class="tb tb3 a"><button class="th" type="button" data-f="carrinho" data-nome="Carrinho de picolé" data-g="Na rua" aria-label="Ampliar: Carrinho de picolé"><img src="img/rua/carrinho-p.webp" alt="Vendedor entrega picolé num carrinho rosa da rádio no calçadão" loading="lazy"><span>Carrinho de picolé</span></button><button class="th" type="button" data-f="viseira" data-nome="Viseira" data-g="Pra levar" aria-label="Ampliar: Viseira"><img src="img/rua/viseira-p.webp" alt="Mulher rindo na praia com viseira amarela escrita Toca aqui" loading="lazy"><span>Viseira</span></button><button class="th" type="button" data-f="pulseira" data-nome="Pulseira trançada" data-g="Símbolo" aria-label="Ampliar: Pulseira trançada"><img src="img/rua/pulseira-p.webp" alt="Duas mãos fazendo toca aqui num show, com pulseiras trançadas nas cores da rádio" loading="lazy"><span>Pulseira trançada</span></button></div>
     </div>
   </div>
@@ -462,6 +465,6 @@
 
 <div class="full" id="full"><div class="box"><button class="x" id="fullX" type="button" aria-label="Fechar">×</button><iframe id="fullFrame" title="Conteúdo em tela cheia" allow="autoplay; microphone"></iframe><img id="fullImg" alt="" hidden><video id="fullVid" controls playsinline preload="none" hidden></video><button class="fv ant" id="fullAnt" type="button" aria-label="Peça anterior">‹</button><button class="fv prox" id="fullProx" type="button" aria-label="Próxima peça">›</button><span class="fcont" id="fullCont"></span></div></div>
 
-<script type="module" src="deck.js?v=19"></script>
+<script type="module" src="deck.js?v=20"></script>
 </body>
 </html>

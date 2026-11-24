@@ -290,6 +290,12 @@ $$('#abas button').forEach(b => b.onclick = () => {
 const legAtual = () => $('#s14 .leg.on');
 const pecasDe = l => JSON.parse(l.dataset.pecas || '[]');
 $$('#s14 .leg').forEach(l => $$('.pc', l).forEach(b => b.onclick = () => abreGaleria(pecasDe(l), +b.dataset.j)));
+// calendário: clicar num post abre as peças dele
+$$('#s15 .it[data-i]').forEach(it => {
+  const abre = () => { const l = $$('#s14 .leg')[+it.dataset.i]; if (l) abreGaleria(pecasDe(l), +l.dataset.principal || 0); };
+  it.addEventListener('click', abre);
+  it.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); abre(); } });
+});
 const arteEl = $('#arte');
 if (arteEl) {
   const abreArte = () => { const l = legAtual(); if (l) abreGaleria(pecasDe(l), +l.dataset.principal || 0); };

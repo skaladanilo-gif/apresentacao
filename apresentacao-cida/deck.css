@@ -498,3 +498,18 @@ body:not(.primeiro) .dica{opacity:0}
 .pc-dica{width:100%;font-size:12px;font-weight:800;opacity:.85}
 .toca-nav .toca-txt-off,.toca-nav .toca-txt-on{white-space:nowrap}
 @media (max-width:900px){.toca-nav{font-size:12px;padding:8px 12px}.toca-nav .toca-txt-off{white-space:normal;max-width:170px;text-align:left;line-height:1.2}}
+
+/* aviso de clique bem visível */
+.dica-clique{display:inline-flex;align-items:center;gap:8px;align-self:flex-start;background:var(--sol);color:var(--ink);font-weight:800;font-size:14px;padding:8px 14px 8px 10px;border-radius:999px;margin-top:12px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+.dica-clique svg{width:20px;height:20px;flex:none;animation:cutuca 1.4s ease-in-out infinite}
+.dica-clique.escura{background:var(--ink);color:var(--papel)}
+@keyframes cutuca{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px) rotate(-8deg)}}
+#s14 .dica-clique{margin-top:10px}
+#s14 .abas{margin-top:12px}
+#s16 .dica-clique{margin:0;font-size:13px;padding:6px 12px 6px 8px}
+#s15 .dica-clique{margin-top:16px}
+#s15 .it{cursor:zoom-in}
+
+#s14 .lado-topo{display:flex;align-items:flex-end;gap:18px;flex-wrap:wrap}
+#s14 .lado-topo .dica-clique{margin:0 0 6px}
+.pc-dica{width:auto;align-self:center;max-width:90px;line-height:1.2}
