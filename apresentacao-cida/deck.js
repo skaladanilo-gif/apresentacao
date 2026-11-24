@@ -65,6 +65,10 @@ const prox = () => irPara(atual + 1, 1), ant = () => irPara(atual - 1, -1);
 $('#prox').onclick = prox; $('#ant').onclick = ant;
 addEventListener('keydown', e => {
   if (e.target.closest && e.target.closest('input,textarea')) return;
+  if (full && full.classList.contains('on')) {
+    if (full.classList.contains('midia')) { if (e.key === 'ArrowRight') passa(1); else if (e.key === 'ArrowLeft') passa(-1); }
+    return;
+  }
   if (['ArrowRight', 'PageDown', ' '].includes(e.key)) { e.preventDefault(); prox(); }
   else if (['ArrowLeft', 'PageUp'].includes(e.key)) { e.preventDefault(); ant(); }
   else if (e.key === 'f' || e.key === 'F') { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen?.(); }
@@ -79,7 +83,7 @@ addEventListener('wheel', e => {
 let tx0 = null;
 addEventListener('touchstart', e => { tx0 = e.touches[0].clientX; }, { passive: true });
 addEventListener('touchend', e => {
-  if (tx0 === null || e.target.closest('.carta,.arrasto')) return;
+  if (tx0 === null || e.target.closest('.carta,.arrasto,.full')) return;
   const dx = e.changedTouches[0].clientX - tx0; if (Math.abs(dx) > 60) dx < 0 ? prox() : ant(); tx0 = null;
 });
 
@@ -182,13 +186,37 @@ radio.onended = () => {
 function ajustaCel() { $$('.celular .tela').forEach(t => t.style.setProperty('--k', (t.clientWidth / 430).toFixed(4))); }
 addEventListener('resize', ajustaCel); ajustaCel();
 
-// ---------- tela cheia para site e Cida ----------
-const full = $('#full'), fullFrame = $('#fullFrame');
+// ---------- tela cheia para site e Cida (e para as artes e reels) ----------
+const full = $('#full'), fullFrame = $('#fullFrame'), fullImg = $('#fullImg'), fullVid = $('#fullVid');
+let galeria = [], gi = 0;
+function paraVideo() { fullVid.pause(); fullVid.removeAttribute('src'); fullVid.load(); }
+function mostraMidia() {
+  const [src, nome] = galeria[gi], video = /\.mp4$/i.test(src);
+  fullImg.hidden = video; fullVid.hidden = !video;
+  if (video) { fullVid.src = src; fullVid.play().catch(() => {}); }
+  else { paraVideo(); fullImg.src = src; fullImg.alt = nome; }
+  $('#fullCont').textContent = galeria.length > 1 ? `${nome} · ${gi + 1}/${galeria.length}` : nome;
+}
+function abreGaleria(lista, i = 0) {
+  if (!lista.length) return;
+  galeria = lista; gi = Math.max(0, Math.min(i, lista.length - 1));
+  fullFrame.src = 'about:blank';
+  full.classList.add('on', 'midia'); full.classList.toggle('varias', lista.length > 1);
+  if (tocando) radio.volume = .2;
+  mostraMidia();
+}
+const passa = d => { if (galeria.length > 1) { gi = (gi + d + galeria.length) % galeria.length; mostraMidia(); } };
+$('#fullAnt').onclick = () => passa(-1); $('#fullProx').onclick = () => passa(1);
 $$('.js-abrir').forEach(b => b.onclick = () => {
   if (tocando) { radio.volume = .2; }
+  full.classList.remove('midia', 'varias'); fullImg.hidden = true; fullVid.hidden = true; paraVideo();
   fullFrame.src = b.dataset.src; full.classList.add('on');
 });
-const fechaFull = () => { full.classList.remove('on'); fullFrame.src = 'about:blank'; radio.volume = 1; };
+const fechaFull = () => {
+  full.classList.remove('on', 'midia', 'varias'); fullFrame.src = 'about:blank';
+  paraVideo(); fullImg.hidden = true; fullVid.hidden = true; fullImg.removeAttribute('src');
+  radio.volume = 1;
+};
 $('#fullX').onclick = fechaFull; full.onclick = e => { if (e.target === full) fechaFull(); };
 addEventListener('keydown', e => { if (e.key === 'Escape' && full.classList.contains('on')) fechaFull(); });
 
@@ -251,13 +279,23 @@ function contaCompat(sec) {
   $('#ondasSvg').innerHTML = s;
 })();
 
-// ---------- 14 · abas ----------
+// ---------- 14 · abas (9 postagens) ----------
 $$('#abas button').forEach(b => b.onclick = () => {
   const i = +b.dataset.i;
   $$('#abas button').forEach(x => x.classList.toggle('on', x === b));
   $$('#arte img').forEach((im, j) => im.classList.toggle('on', j === i));
-  $$('.leg').forEach((l, j) => l.classList.toggle('on', j === i));
+  $$('#s14 .leg').forEach((l, j) => l.classList.toggle('on', j === i));
+  $$('#s14 .leg .txt').forEach(t => { t.scrollTop = 0; });
 });
+const legAtual = () => $('#s14 .leg.on');
+const pecasDe = l => JSON.parse(l.dataset.pecas || '[]');
+$$('#s14 .leg').forEach(l => $$('.pc', l).forEach(b => b.onclick = () => abreGaleria(pecasDe(l), +b.dataset.j)));
+const arteEl = $('#arte');
+if (arteEl) {
+  const abreArte = () => { const l = legAtual(); if (l) abreGaleria(pecasDe(l), +l.dataset.principal || 0); };
+  arteEl.addEventListener('click', abreArte);
+  arteEl.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); abreArte(); } });
+}
 
 // ================= 3D =================
 const cena = (function () {
