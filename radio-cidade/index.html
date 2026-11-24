@@ -227,7 +227,7 @@ footer{background:var(--azul);color:#fff;padding:90px 0 0;overflow:hidden}
       <a href="#cida">Cida IA</a>
       <a href="#instagram">Instagram</a>
     </nav>
-    <button class="pill js-play" type="button"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"/></svg><span>Ouvir ao vivo</span></button>
+    <button class="pill js-play" type="button"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"/></svg><span>Clique aqui para escutar rádio ao vivo</span></button>
   </div>
 </header>
 
@@ -241,7 +241,7 @@ footer{background:var(--azul);color:#fff;padding:90px 0 0;overflow:hidden}
         <svg class="anel" viewBox="0 0 200 200" aria-hidden="true"><defs><path id="circ" d="M100,100 m-82,0 a82,82 0 1,1 164,0 a82,82 0 1,1 -164,0"/></defs><text fill="#fff" font-family="Montserrat" font-weight="800" font-size="15.5" letter-spacing="3.2"><textPath href="#circ">OUÇA AO VIVO · 97.7 FM · RÁDIO CIDADE · </textPath></text></svg>
         <span class="miolo"><svg id="discoIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"/></svg></span>
       </button>
-      <p>Os hits pop do momento, o dia inteiro, na Grande Vitória.</p>
+      <p><b>Clique no disco para escutar a rádio ao vivo.</b> Os hits pop do momento, o dia inteiro, na Grande Vitória.</p>
     </div>
   </div>
   <div class="dialband">
@@ -420,7 +420,7 @@ const player=document.getElementById('player'),pp=document.getElementById('pp'),
 const PLAY='<path d="M7 4.5v15l13-7.5z"/>',PAUSE='<path d="M6 4h4v16H6zM14 4h4v16h-4z"/>';
 function setUI(on,txt){player.classList.toggle('paused',!on);ppIcon.innerHTML=discoIcon.innerHTML=on?PAUSE:PLAY;disco.classList.toggle('on',on);
   pp.setAttribute('aria-label',on?'Pausar':'Tocar');pstatus.textContent=txt||(on?'Ao vivo':'Pausado');
-  document.querySelectorAll('.top .js-play span').forEach(s=>s.textContent=on?'Pausar':'Ouvir ao vivo')}
+  document.querySelectorAll('.top .js-play span').forEach(s=>s.textContent=on?'Clique para pausar':'Clique aqui para escutar rádio ao vivo')}
 // se o sinal ao vivo não vier em 5 s, toca as vinhetas gravadas da rádio
 const RESERVA=['../audio/radio-1.mp3','../audio/radio-2.mp3'];let reserva=-1,vigia=0;
 function tocaReserva(){clearTimeout(vigia);reserva=0;audio.src=RESERVA[0];audio.play().then(()=>setUI(true)).catch(()=>setUI(false,'Não conectou. Toque de novo.'))}

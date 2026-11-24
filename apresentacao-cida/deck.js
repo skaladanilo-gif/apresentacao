@@ -176,8 +176,8 @@ radio.onended = () => {
     $$('#s16 .th').forEach(x => x.classList.remove('on'));
     if (on) return mostra(ini.src, ini.alt, ini.cap, false);
     b.classList.add('on');
-    const g = b.closest('.g');
-    mostra(`img/rua/${b.dataset.f}.webp`, $('img', b).alt, `<b>${b.dataset.nome}</b><span>${$('h3', g).textContent}: ${$('p', g).textContent}</span>`, true);
+    const g = b.closest('.g') || $$('#s16 .g h3').find(x => x.textContent === b.dataset.g)?.closest('.g');
+    mostra(`img/rua/${b.dataset.f}.webp`, $('img', b).alt, `<b>${b.dataset.nome}</b>` + (g ? `<span>${$('h3', g).textContent}: ${$('p', g).textContent}</span>` : ''), true);
   }));
   $('.volta', h).addEventListener('click', () => { $$('#s16 .th').forEach(x => x.classList.remove('on')); mostra(ini.src, ini.alt, ini.cap, false); });
 })();
